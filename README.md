@@ -152,3 +152,4 @@ npm start
 
 Copyright © 2026 Cloud Resource Management System. All rights reserved.
 
+# login and register resetpassword are working fined with auth-service merge page with login and register and login
