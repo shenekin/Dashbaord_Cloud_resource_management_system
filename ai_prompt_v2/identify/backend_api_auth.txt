@@ -22,7 +22,7 @@
 - `PUT /roles/{role_id}` - Update role
 - `POST /roles/assign` - Assign role to user
 
-## Database Schema
+
 
 ### Core Tables
 

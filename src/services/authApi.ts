@@ -60,8 +60,8 @@ class AuthApiClient {
             ? localStorage.getItem('refresh-token') 
             : null;
           
-          if (refreshToken && error.config && !error.config._retry) {
-            error.config._retry = true;
+          if (refreshToken && error.config && !(error.config as any)._retry) {
+            (error.config as any)._retry = true;
             try {
               const response = await this.client.post('/auth/refresh', {
                 refresh_token: refreshToken,
