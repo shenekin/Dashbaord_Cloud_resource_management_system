@@ -1,0 +1,20 @@
+请基于与 Login 页面相同的技术栈，
+生成一个用户注册页面（/identity/register）。
+
+要求：
+1. 使用与 Login 相同的 AuthCard 布局
+2. 包含字段：
+   - Username 
+   - Email
+   - Display Name
+   - Password
+   - Confirm Password
+   - Terms Agreement（必须勾选）
+3. 前端校验：
+   - 密码一致性
+   - 密码强度提示
+4. 注册成功后跳转 Login 页面
+5. 不涉及任何后端实现
+
+
+identity 是独立功能域，不依赖业务模块

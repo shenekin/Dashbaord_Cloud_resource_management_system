@@ -1,0 +1,37 @@
+app/
+├── identity/
+├── layout.tsx
+├── dashboard/
+├── gateway/
+├── projects/
+└── resources/
+
+identity 是独立功能域，不依赖业务模块
+
+
+identity/
+├── layout.tsx              # Identity 专用 layout（无 Sidebar/Header）
+├── login/
+│   └── page.tsx            # Login 页面
+├── register/
+│   └── page.tsx            # Register 页面
+├── profile/
+│   └── page.tsx            # 用户资料页（已登录）
+├── settings/
+│   └── page.tsx            # 账号设置
+├── components/
+│   ├── AuthCard.tsx
+│   ├── AuthInput.tsx
+│   ├── PasswordInput.tsx
+│   ├── ErrorAlert.tsx
+│   └── LoadingButton.tsx
+├── hooks/
+│   └── useAuth.ts           # 前端身份状态 Hook
+├── store/
+│   └── authStore.ts         # 前端身份状态（Zustand）
+└── types/
+    └── identity.ts          # User / Auth 类型定义
+
+
+
+
