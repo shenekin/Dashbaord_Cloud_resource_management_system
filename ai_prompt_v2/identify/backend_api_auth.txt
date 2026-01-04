@@ -1,0 +1,34 @@
+
+### Authentication
+
+- `POST /auth/login` - User login (returns JWT tokens)
+- `POST /auth/refresh` - Refresh access token
+- `GET /auth/verify` - Verify token validity
+
+### Users
+
+- `POST /users` - Create user
+- `GET /users/{user_id}` - Get user by ID
+- `GET /users` - Get user list (paginated)
+- `PUT /users/{user_id}` - Update user
+- `POST /users/{user_id}/reset-password` - Reset user password
+- `DELETE /users/{user_id}` - Soft delete user
+
+### Roles
+
+- `POST /roles` - Create role
+- `GET /roles/{role_id}` - Get role by ID
+- `GET /roles` - Get role list (paginated)
+- `PUT /roles/{role_id}` - Update role
+- `POST /roles/assign` - Assign role to user
+
+## Database Schema
+
+### Core Tables
+
+- `tenant_info` - Tenant information
+- `sys_user` - User accounts
+- `sys_role` - Roles
+- `sys_permission` - Permissions
+- `sys_user_role` - User-Role associations
+- `sys_role_permission` - Role-Permission associations

@@ -24,18 +24,37 @@ export default function SettingsPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
+    // Wait a bit for auth state to initialize from localStorage
+    const timer = setTimeout(() => {
+      setIsChecking(false);
+      if (!isAuthenticated) {
+        router.push('/login');
+        return;
+      }
 
-    if (user) {
-      setUsername(user.username);
-      setEmail(user.email);
-    }
+      if (user) {
+        setUsername(user.username);
+        setEmail(user.email);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [isAuthenticated, router, user]);
+
+  // Show loading state while checking authentication
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated || !user) {
     return null;
@@ -173,4 +192,3 @@ export default function SettingsPage() {
     </AuthCard>
   );
 }
-

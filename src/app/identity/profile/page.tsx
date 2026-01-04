@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthCard from '../components/AuthCard';
@@ -12,12 +12,50 @@ import { useAuth } from '../hooks/useAuth';
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
+  const [isChecking, setIsChecking] = useState(true);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    }
+    // Wait a bit for auth state to initialize from localStorage
+    const timer = setTimeout(() => {
+      setIsChecking(false);
+      if (!isAuthenticated) {
+        router.push('/login');
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [isAuthenticated, router]);
+
+  // Auto redirect to dashboard after 5 seconds
+  useEffect(() => {
+    if (isAuthenticated && !isChecking) {
+      const redirectTimer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(redirectTimer);
+            router.push('/');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(redirectTimer);
+    }
+  }, [isAuthenticated, isChecking, router]);
+
+  // Show loading state while checking authentication
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated || !user) {
     return null;
@@ -59,6 +97,12 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        <div className="border-t border-gray-200 pt-4 pb-2">
+          <div className="text-center text-sm text-gray-600 mb-4">
+            Redirecting to dashboard in {countdown} second{countdown !== 1 ? 's' : ''}...
+          </div>
+        </div>
+
         <div className="flex flex-col gap-3 pt-4 border-t border-gray-200">
           <Link
             href="/identity/settings"
@@ -77,4 +121,3 @@ export default function ProfilePage() {
     </AuthCard>
   );
 }
-

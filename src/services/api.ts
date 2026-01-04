@@ -22,7 +22,8 @@ class ApiClient {
   private setupInterceptors() {
     this.client.interceptors.request.use(
       (config) => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        // Use auth-token from localStorage (same as authApi)
+        const token = typeof window !== 'undefined' ? localStorage.getItem('auth-token') : null;
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -36,7 +37,9 @@ class ApiClient {
       (error: AxiosError<ApiResponse>) => {
         if (error.response?.status === 401) {
           if (typeof window !== 'undefined') {
-            localStorage.removeItem('token');
+            localStorage.removeItem('auth-token');
+            localStorage.removeItem('refresh-token');
+            localStorage.removeItem('auth-user');
             window.location.href = '/login';
           }
         }
@@ -68,21 +71,5 @@ class ApiClient {
 
 export const apiClient = new ApiClient();
 
-/**
- * Dashboard API endpoints
- */
-export const dashboardApi = {
-  getSystemHealth: () => apiClient.get('/dashboard/system/health'),
-  getActiveAlerts: () => apiClient.get('/dashboard/alerts/active'),
-  getPendingApprovals: () => apiClient.get('/dashboard/approvals/pending'),
-  getGatewayMetrics: (timeRange?: string) => apiClient.get('/dashboard/gateway/metrics', { timeRange }),
-  getUserStats: () => apiClient.get('/dashboard/users/stats'),
-  getECSStatus: () => apiClient.get('/dashboard/resources/ecs/status'),
-  getProjectResourceUsage: () => apiClient.get('/dashboard/projects/usage'),
-  getActiveAlarms: () => apiClient.get('/dashboard/alerts/list'),
-  getAutomationTasks: () => apiClient.get('/dashboard/automation/tasks'),
-  getCostOverview: () => apiClient.get('/dashboard/cost/overview'),
-  getAuditLogs: (limit?: number) => apiClient.get('/dashboard/audit/logs', { limit }),
-  getRecentNotifications: (limit?: number) => apiClient.get('/dashboard/notifications/recent', { limit }),
-};
-
+// Dashboard API endpoints have been removed
+// Only user and role management APIs are available via authApi service
