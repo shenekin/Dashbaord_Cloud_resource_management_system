@@ -1,0 +1,389 @@
+# 一、整体页面结构（第一层拆分）
+Dashboard Page
+├── Global Header（顶部导航）
+├── Sidebar Navigation（左侧主导航）
+└── Main Content Area（主内容区）
+    ├── Status Summary Cards
+    ├── Core Metrics Panels
+    ├── Resource & Project Panels
+    ├── Automation & Cost Panels
+    ├── Logs & Notifications
+
+# 二、Global Header（顶部全局区）
+
+### 1️⃣ Header 左侧
+**模块：Brand & Global Search**
+* Logo / 产品名：`Dashboard`
+* 全局搜索框：
+  * 搜索对象：
+    * Project
+    * Resource
+    * User
+    * Instance
+    * Task / Alert
+  * 用途：
+    * 快速定位资源
+    * 运维 / 管理员高频入口
+### 2️⃣ Header 中部（系统状态）
+**模块：Global System Indicators**
+| 子模块            | 说明                                  |
+| -------------- | ----------------------------------- |
+| Gateway Status | `Gateway: Normal / Degraded / Down` |
+| Active Alerts  | 当前未解决告警数量                           |
+| Pending Tasks  | 待处理审批 / 自动化任务                       |
+### 3️⃣ Header 右侧（用户相关）
+**模块：User Control**
+* 当前用户头像
+* 当前角色（Admin）
+* 下拉菜单：
+  * Profile
+  * Switch Role（如果支持）
+  * Logout
+# 三、Sidebar Navigation（左侧主导航）
+
+Sidebar
+├── Dashboard
+├── Gateway
+├── User & Auth
+├── Projects
+├── Resources
+│   ├── ECS
+│   ├── Network
+│   ├── Storage / Images
+│   └── Security Groups
+├── Quotas
+├── Tasks
+├── Monitoring
+├── Billing
+├── Audit Logs
+├── Notifications
+
+### Sidebar 设计原则
+* **功能域分组清晰**
+* 二级菜单用于：
+  * 资源类
+  * 配额类
+* Sidebar = **平台能力地图**
+# 四、Main Content（核心内容区）
+### 模块：Status Summary Cards
+┌─ System Health ─┐ ┌─ Active Alerts ─┐ ┌─ Pending Approvals ─┐
+#### 每个卡片结构统一：
+* Icon（状态型）
+* Title
+* 核心数值
+* 简短描述
+#### 功能定位：
+| 卡片                | 面向谁     | 目的        |
+| ----------------- | ------- | --------- |
+| System Health     | 运维      | 整体系统是否 OK |
+| Active Alerts     | 运维 / 管理 | 是否有风险     |
+| Pending Approvals | 管理      | 是否有流程阻塞   |
+
+## ② 核心系统指标区（第二行）
+### 左：API Gateway Overview
+**模块：Traffic & Gateway Metrics**
+* 折线图：Requests Per Second
+* 时间维度：小时 / 天
+* 用途：
+  * 判断流量趋势
+  * 排查异常波动
+### 右：User & Role Management
+**子模块拆分**
+1. 用户统计
+   * Total Users
+   * Active Users
+2. 用户活跃度柱状图（按时间）
+3. 角色分布（环形图）
+   * Admin %
+   * Users %
+## ③ 资源运行状态区（第三行）
+### 左：ECS Instance Status
+**模块：Compute Resource Health**
+* Running 数量
+* Stopped 数量
+* 可用率 / 异常率（环形图）
+* CPU Usage
+
+### 右：Project Resource Usage
+**模块：Project-Level Resource View**
+
+表格字段：
+| 字段      | 含义      |
+| ------- | ------- |
+| Project | 项目 / 客户 |
+| CPU     | 使用率     |
+| RAM     | 使用率     |
+| Storage | 使用率     |
+## ④ 自动化 & 成本区（第四行）
+### 左：Active Alarms
+**模块：Alert Management**
+* 告警级别：
+
+  * Critical
+  * Warning
+  * Alert
+* 每条告警：
+  * 类型
+  * 当前状态
+  * 操作入口
+
+### 中：Task Automation
+
+**模块：Automation Overview**
+
+* Scheduled Tasks 数量
+* 成功率 %
+* 任务类型：
+
+  * Backup
+  * Scaling
+  * Cleanup
+
+### 右：Cost Overview（两个视角）
+1. 数值型：
+   * 本月成本
+   * 预测成本
+2. 图形型：
+   * 成本结构（饼图）
+   * 按资源 / 项目拆分
+## ⑤ 底部信息区
+### 左：Audit Logs
+**模块：Security & Compliance**
+字段：
+| Time | User | Action | Details |
+
+用途：
+
+* 合规
+* 安全
+* 责任追踪
+
+
+### 右：Recent Notifications
+
+**模块：Message Center**
+
+* 通知渠道：
+  * Email
+  * SMS
+  * WeChat
+* 类型：
+  * Alert
+  * Approval
+  * Info
+
+# 五、抽象成「可复用模块清单」
+Core Components
+├── StatusCard
+├── LineChartPanel
+├── DonutChartPanel
+├── ResourceTable
+├── AlertList
+├── CostPanel
+├── AuditTable
+├── NotificationList
+
+
+
+## 1️⃣ 页面级结构定义（Page Level）
+
+**Page Name**：`Dashboard`
+
+**Layout Pattern**：
+
+```
+┌──────────────────────── Global Header ────────────────────────┐
+│                                                                │
+├─ Sidebar ───────────┬──────────── Main Content ───────────────┤
+│                     │                                          │
+│                     │                                          │
+└─────────────────────┴──────────────────────────────────────────┘
+
+## 2️⃣ Header 模块设计（可全局复用）
+
+### Header / 功能拆分
+
+| 子模块           | 职责                       |
+| ------------- | ------------------------ |
+| Brand         | Logo / 产品名               |
+| Global Search | 全平台资源搜索                  |
+| System Status | Gateway / Alerts / Tasks |
+| User Control  | 当前用户 & 操作                |
+
+**交互规则**
+
+* System Status：点击 → 跳转 Monitoring / Alerts 页面
+* User Control：下拉菜单（Profile / Logout）
+
+
+## 3️⃣ Sidebar 模块设计（全局核心）
+
+### Sidebar 一级导航定义
+
+
+Dashboard
+Gateway
+User & Auth
+Projects
+Resources
+Quotas
+Tasks
+Monitoring
+Billing
+Audit Logs
+Notifications
+
+### Sidebar 设计原则
+* 一级 = **业务域**
+* 二级 = **资源类型**
+* 当前页面高亮
+* 支持收起 / 展开
+
+
+## 4️⃣ Main Content 模块拆分（重点）
+
+### A. Status Summary Cards（第一行）
+
+**组件名**：`StatusCard`
+
+| 字段          | 说明                        |
+| ----------- | ------------------------- |
+| title       | 卡片标题                      |
+| icon        | 状态图标                      |
+| mainValue   | 核心值                       |
+| description | 简短说明                      |
+| status      | success / warning / error |
+
+👉 System Health / Active Alerts / Pending Approvals
+
+
+### B. API Gateway Overview
+
+**组件名**：`LineChartPanel`
+
+* 数据：RPS / 时间
+* 操作：
+  * 时间范围切换
+  * hover 显示数值
+
+### C. User & Role Management
+
+拆成 **3 个子组件**
+1. UserStats（数字）
+2. UserActivityChart（柱状）
+3. RoleDistributionChart（环形）
+
+### D. ECS Instance Status
+
+**组件名**：`ResourceStatusPanel`
+* Running / Stopped
+* 可用率
+* CPU 使用率
+* 操作入口：Manage Instances
+
+
+### E. Project Resource Usage
+**组件名**：`ResourceUsageTable`
+* 行：Project
+* 列：CPU / RAM / Storage
+* 单元格：进度条
+### F. Active Alarms
+**组件名**：`AlertList`
+* 告警等级
+* 当前状态
+* 快捷操作
+### G. Task Automation
+**组件名**：`AutomationOverview`
+* 任务总数
+* 成功率
+* 任务类型列表
+### H. Cost Overview
+拆成两个组件：
+* CostSummary（数字）
+* CostBreakdownChart（饼图）
+### I. Audit Logs
+**组件名**：`AuditTable`
+* Time / User / Action / Details
+### J. Recent Notifications
+**组件名**：`NotificationList`
+* 多渠道
+* 多类型
+# 二、② 后端 API 反推设计（不写代码）
+> 目标：
+> **让后端知道“必须提供哪些数据”，而不是怎么写代码**
+
+## 1️⃣ Dashboard API 分组原则
+
+/dashboard
+  ├── /system
+  ├── /gateway
+  ├── /users
+  ├── /resources
+  ├── /projects
+  ├── /automation
+  ├── /cost
+  ├── /alerts
+  ├── /audit
+  └── /notifications
+  
+## 2️⃣ API ↔ 页面模块对应表
+
+| 页面模块              | API 数据职责    |
+| ----------------- | ----------- |
+| System Health     | 系统状态 / 服务存活 |
+| Active Alerts     | 告警数量 / 级别   |
+| Pending Approvals | 待审批流程       |
+| API Gateway Chart | 请求量 / 时间序列  |
+| User Stats        | 用户总数 / 活跃数  |
+| Role Distribution | 角色比例        |
+| ECS Status        | 实例状态统计      |
+| Project Usage     | 项目资源使用      |
+| Automation        | 任务数量 / 成功率  |
+| Cost Overview     | 成本汇总 / 预测   |
+| Audit Logs        | 操作日志        |
+| Notifications     | 最近消息        |
+
+## 3️⃣ 重要后端设计原则（给你用的）
+
+* **Dashboard API 必须是“聚合接口”**
+* 不让前端调用 10 个服务拼数据
+* Dashboard = Read Only / Cache Friendly
+
+# 三、③ 页面 → 子页面跳转规划（用户路径）
+
+> 目标：
+> **Dashboard 不是终点，是入口**
+
+
+
+## 1️⃣ Dashboard 交互跳转图
+
+
+Dashboard
+ ├─ System Health → Monitoring / System Status
+ ├─ Active Alerts → Alerts Center
+ ├─ Pending Approvals → Approval Center
+ ├─ Gateway Chart → Gateway Detail
+ ├─ ECS Status → ECS List
+ ├─ Project Resource → Project Detail
+ ├─ Automation → Task Center
+ ├─ Cost Overview → Billing / Cost Analysis
+ ├─ Audit Logs → Audit Detail
+ └─ Notifications → Notification Center
+
+## 2️⃣ 用户角色视角
+
+### Admin
+
+* 看全局
+* 看成本
+* 看安全
+* 看审批
+
+### 普通用户
+
+* 看自己项目
+* 看资源
+* 看告警
+
+

@@ -1,0 +1,9 @@
+TypeScript
+Next.js (React)
+Tailwind CSS
+shadcn/ui
+Recharts
+TanStack Table
+Zustand
+TanStack Query（前端数据层）
+React Hook Form
