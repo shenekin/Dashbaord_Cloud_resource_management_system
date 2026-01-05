@@ -1,104 +1,104 @@
 # Cloud Resource Management System - Dashboard
 
-基于 `ai_prompt_v2` 规范开发的 Dashboard 前端应用。
+Dashboard frontend application developed based on `ai_prompt_v2` specification.
 
-## 技术栈
+## Tech Stack
 
-- **框架**: Next.js 14 (App Router)
-- **语言**: TypeScript
-- **样式**: Tailwind CSS
-- **状态管理**: Zustand
-- **数据获取**: TanStack Query (React Query)
-- **表格**: TanStack Table
-- **图表**: Recharts
-- **表单**: React Hook Form
-- **图标**: Lucide React
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand
+- **Data Fetching**: TanStack Query (React Query)
+- **Tables**: TanStack Table
+- **Charts**: Recharts
+- **Forms**: React Hook Form
+- **Icons**: Lucide React
 
-## 项目结构
+## Project Structure
 
 ```
 src/
 ├── app/                      # Next.js App Router
-│   ├── layout.tsx            # 根布局
-│   ├── page.tsx             # Dashboard 主页
+│   ├── layout.tsx            # Root layout
+│   ├── page.tsx             # Dashboard home page
 │   ├── providers.tsx        # TanStack Query Provider
-│   ├── gateway/             # Gateway 服务模块
-│   ├── identity/            # 用户权限模块
-│   ├── projects/            # 项目管理模块
-│   └── resources/           # 资源管理模块
-│       └── ecs/             # ECS 管理
-├── components/              # 组件
-│   ├── layout/              # 布局组件
-│   │   ├── Header.tsx       # 全局头部
-│   │   ├── Sidebar.tsx      # 侧边栏导航
-│   │   └── Footer.tsx       # 页脚
-│   └── dashboard/           # Dashboard 组件
-│       ├── StatusCard.tsx   # 状态卡片
-│       ├── LineChartPanel.tsx # 折线图面板
-│       └── ResourceUsageTable.tsx # 资源使用表格
-├── store/                   # Zustand 状态管理
-│   ├── useAuthStore.ts      # 认证状态
-│   └── useUIStore.ts        # UI 状态
-├── services/                # API 服务
-│   └── api.ts               # API 客户端和端点
+│   ├── gateway/             # Gateway service module
+│   ├── identity/            # User & permission module
+│   ├── projects/            # Project management module
+│   └── resources/           # Resource management module
+│       └── ecs/             # ECS management
+├── components/              # Components
+│   ├── layout/              # Layout components
+│   │   ├── Header.tsx       # Global header
+│   │   ├── Sidebar.tsx      # Sidebar navigation
+│   │   └── Footer.tsx       # Footer
+│   └── dashboard/           # Dashboard components
+│       ├── StatusCard.tsx   # Status card
+│       ├── LineChartPanel.tsx # Line chart panel
+│       └── ResourceUsageTable.tsx # Resource usage table
+├── store/                   # Zustand state management
+│   ├── useAuthStore.ts      # Authentication state
+│   └── useUIStore.ts        # UI state
+├── services/                # API services
+│   └── api.ts               # API client and endpoints
 ├── hooks/                   # React Hooks
-│   └── useDashboard.ts      # Dashboard 数据 hooks
-├── types/                   # TypeScript 类型
-│   └── index.ts             # 类型定义
-├── lib/                     # 工具库
-│   └── utils.ts             # 工具函数
-└── styles/                  # 样式
-    └── globals.css           # 全局样式
+│   └── useDashboard.ts      # Dashboard data hooks
+├── types/                   # TypeScript types
+│   └── index.ts             # Type definitions
+├── lib/                     # Utility library
+│   └── utils.ts             # Utility functions
+└── styles/                  # Styles
+    └── globals.css           # Global styles
 ```
 
-## Dashboard 功能模块
+## Dashboard Feature Modules
 
-### 1. Status Summary Cards（状态摘要卡片）
-- System Health（系统健康）
-- Active Alerts（活跃告警）
-- Pending Approvals（待审批）
+### 1. Status Summary Cards
+- System Health
+- Active Alerts
+- Pending Approvals
 
-### 2. Core Metrics（核心指标）
-- API Gateway Overview（网关概览）- 折线图
-- User & Role Management（用户角色管理）
+### 2. Core Metrics
+- API Gateway Overview - Line chart
+- User & Role Management
 
-### 3. Resource Status（资源状态）
-- ECS Instance Status（ECS 实例状态）
-- Project Resource Usage（项目资源使用）- 表格
+### 3. Resource Status
+- ECS Instance Status
+- Project Resource Usage - Table
 
-### 4. Automation & Cost（自动化与成本）
-- Active Alarms（活跃告警列表）
-- Task Automation（任务自动化）
-- Cost Overview（成本概览）
+### 4. Automation & Cost
+- Active Alarms List
+- Task Automation
+- Cost Overview
 
-### 5. Bottom Info（底部信息）
-- Audit Logs（审计日志）
-- Recent Notifications（最近通知）
+### 5. Bottom Info
+- Audit Logs
+- Recent Notifications
 
-## 开始使用
+## Getting Started
 
-### 安装依赖
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 环境变量
+### Environment Variables
 
-创建 `.env.local` 文件：
+Create `.env.local` file:
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
 ```
 
-### 运行开发服务器
+### Run Development Server
 
 ```bash
 npm run dev
 ```
 
-打开 [http://localhost:3000](http://localhost:3000) 查看应用。
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ## API 端点
 
@@ -117,39 +117,39 @@ Dashboard 使用聚合 API 端点，所有数据通过 `/dashboard/*` 路径获�
 - `/dashboard/audit/logs` - 审计日志
 - `/dashboard/notifications/recent` - 最近通知
 
-## 特性
+## Features
 
-- ✅ 响应式布局（Header + Sidebar + Main Content）
-- ✅ 实时数据更新（TanStack Query 自动轮询）
-- ✅ 状态管理（Zustand）
-- ✅ 类型安全（TypeScript）
-- ✅ 现代化 UI（Tailwind CSS）
-- ✅ 图表可视化（Recharts）
-- ✅ 数据表格（TanStack Table）
+- ✅ Responsive Layout (Header + Sidebar + Main Content)
+- ✅ Real-time Data Updates (TanStack Query auto-polling)
+- ✅ State Management (Zustand)
+- ✅ Type Safety (TypeScript)
+- ✅ Modern UI (Tailwind CSS)
+- ✅ Chart Visualization (Recharts)
+- ✅ Data Tables (TanStack Table)
 
-## 开发
+## Development
 
-### 代码检查
+### Code Linting
 
 ```bash
 npm run lint
 ```
 
-### 类型检查
+### Type Checking
 
 ```bash
 npm run type-check
 ```
 
-### 构建
+### Build
 
 ```bash
 npm run build
 npm start
 ```
 
-## 许可证
+## License
 
 Copyright © 2026 Cloud Resource Management System. All rights reserved.
 
-# login and register resetpassword are working fined with auth-service merge page with login and register and login
+# Login and register reset password are working fine with auth-service. Merged page with login and register.
