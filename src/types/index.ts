@@ -63,7 +63,7 @@ export interface UserStats {
   };
 }
 
-export interface ECSStatus {
+export interface Resources {
   running: number;
   stopped: number;
   availability: number;

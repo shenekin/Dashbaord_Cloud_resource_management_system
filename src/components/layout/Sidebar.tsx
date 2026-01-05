@@ -16,6 +16,7 @@ import {
   HardDrive,
   Lock,
   ChevronDown,
+  Cloud,
 } from 'lucide-react';
 import { useUIStore } from '@/store/useUIStore';
 import { cn } from '@/lib/utils';
@@ -36,7 +37,7 @@ export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { sidebarCollapsed } = useUIStore();
-  const [expandedItems, setExpandedItems] = useState<string[]>(['resources']);
+  const [expandedItems, setExpandedItems] = useState<string[]>(['resources', 'hwpc']);
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', label: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -49,10 +50,20 @@ export default function Sidebar() {
       path: '/resources',
       icon: Server,
       children: [
-        { id: 'ecs', label: 'ECS', path: '/resources/ecs', icon: Server },
-        { id: 'network', label: 'Network', path: '/resources/network', icon: Network },
-        { id: 'storage', label: 'Storage / Images', path: '/resources/storage', icon: HardDrive },
-        { id: 'security-groups', label: 'Security Groups', path: '/resources/security-groups', icon: Lock },
+        // Added: HWPC menu item with sub-items (ECS, Network, Storage, Security Groups)
+        // Updated: Changed icon to Cloud to represent Huawei Cloud
+        {
+          id: 'hwpc',
+          label: 'HWPC',
+          path: '/resources/hwpc',
+          icon: Cloud,
+          children: [
+            { id: 'ecs', label: 'ECS', path: '/resources/ecs', icon: Server },
+            { id: 'network', label: 'Network', path: '/resources/network', icon: Network },
+            { id: 'storage', label: 'Storage / Images', path: '/resources/storage', icon: HardDrive },
+            { id: 'security-groups', label: 'Security Groups', path: '/resources/security-groups', icon: Lock },
+          ],
+        },
       ],
     },
     { id: 'quotas', label: 'Quotas', path: '/quotas', icon: Activity },
@@ -127,20 +138,70 @@ export default function Sidebar() {
                         {item.children?.map((child) => {
                           const ChildIcon = child.icon;
                           const childActive = isActive(child.path);
+                          const hasGrandChildren = child.children && child.children.length > 0;
+                          const isChildExpanded = expandedItems.includes(child.id);
+                          
                           return (
                             <li key={child.id}>
-                              <button
-                                onClick={() => handleMenuClick(child.path)}
-                                className={cn(
-                                  'w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
-                                  childActive
-                                    ? 'bg-primary/50 text-white'
-                                    : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-                                )}
-                              >
-                                <ChildIcon className="w-4 h-4" />
-                                <span>{child.label}</span>
-                              </button>
+                              {hasGrandChildren ? (
+                                <>
+                                  <button
+                                    onClick={() => toggleExpand(child.id)}
+                                    className={cn(
+                                      'w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
+                                      childActive
+                                        ? 'bg-primary/50 text-white'
+                                        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                                    )}
+                                  >
+                                    <ChildIcon className="w-4 h-4" />
+                                    <span className="flex-1 text-left">{child.label}</span>
+                                    <ChevronDown
+                                      className={cn(
+                                        'w-3 h-3 transition-transform',
+                                        isChildExpanded && 'transform rotate-180'
+                                      )}
+                                    />
+                                  </button>
+                                  {isChildExpanded && (
+                                    <ul className="ml-6 mt-1 space-y-1">
+                                      {child.children?.map((grandChild) => {
+                                        const GrandChildIcon = grandChild.icon;
+                                        const grandChildActive = isActive(grandChild.path);
+                                        return (
+                                          <li key={grandChild.id}>
+                                            <button
+                                              onClick={() => handleMenuClick(grandChild.path)}
+                                              className={cn(
+                                                'w-full flex items-center gap-2 px-3 py-2 rounded-md text-xs transition-colors',
+                                                grandChildActive
+                                                  ? 'bg-primary/50 text-white'
+                                                  : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                                              )}
+                                            >
+                                              <GrandChildIcon className="w-3.5 h-3.5" />
+                                              <span>{grandChild.label}</span>
+                                            </button>
+                                          </li>
+                                        );
+                                      })}
+                                    </ul>
+                                  )}
+                                </>
+                              ) : (
+                                <button
+                                  onClick={() => handleMenuClick(child.path)}
+                                  className={cn(
+                                    'w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
+                                    childActive
+                                      ? 'bg-primary/50 text-white'
+                                      : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                                  )}
+                                >
+                                  <ChildIcon className="w-4 h-4" />
+                                  <span>{child.label}</span>
+                                </button>
+                              )}
                             </li>
                           );
                         })}
