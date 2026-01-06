@@ -6,31 +6,58 @@ interface AdminPasswordInputProps {
   value: string;
   error?: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
-export default function AdminPasswordInput({ value, error, onChange }: AdminPasswordInputProps) {
+export default function AdminPasswordInput({ 
+  value, 
+  error, 
+  onChange, 
+  disabled = false 
+}: AdminPasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Admin Password</label>
+      <label htmlFor="admin-password" className="block text-sm font-semibold text-gray-700 mb-2">
+        Administrator Password <span className="text-red-500">*</span>
+      </label>
       <div className="relative">
         <input
+          id="admin-password"
           type={showPassword ? 'text' : 'password'}
-          value={value}
+          value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Enter admin password"
-          className={`w-full px-3 py-2 border rounded-md pr-10 ${error ? 'border-red-500' : 'border-gray-300'}`}
+          placeholder="Enter a strong password (min 8 characters)"
+          disabled={disabled}
+          aria-label="Administrator password input"
+          aria-required="true"
+          aria-invalid={!!error}
+          aria-describedby={error ? 'admin-password-error' : undefined}
+          className={`w-full px-4 py-3 border-2 rounded-xl pr-12 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 placeholder:text-gray-400 ${
+            error ? 'border-red-400 bg-red-50' : 'border-gray-200'
+          } ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`}
         />
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
+          disabled={disabled}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 disabled:opacity-50 font-medium text-sm px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors"
         >
           {showPassword ? 'Hide' : 'Show'}
         </button>
       </div>
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+      <p className="mt-2 text-xs text-gray-500">
+        Must contain uppercase, lowercase, number, and special character
+      </p>
+      {error && (
+        <p id="admin-password-error" className="mt-2 text-sm text-red-600 font-medium flex items-center gap-1" role="alert">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {error}
+        </p>
+      )}
     </div>
   );
 }

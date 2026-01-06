@@ -3,9 +3,10 @@
 interface BandwidthTypeSelectorProps {
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
-export default function BandwidthTypeSelector({ value, onChange }: BandwidthTypeSelectorProps) {
+export default function BandwidthTypeSelector({ value, onChange, disabled = false }: BandwidthTypeSelectorProps) {
   const bandwidthTypes = [
     { value: 'PER', label: 'PER (Per EIP)' },
     { value: 'WHOLE', label: 'WHOLE (Shared)' },
@@ -17,7 +18,8 @@ export default function BandwidthTypeSelector({ value, onChange }: BandwidthType
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+        disabled={disabled}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <option value="">Select bandwidth type</option>
         {bandwidthTypes.map((type) => (

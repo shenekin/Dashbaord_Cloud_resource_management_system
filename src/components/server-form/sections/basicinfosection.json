@@ -1,0 +1,87 @@
+{
+  "section": "basic",
+  "title": "Basic Information",
+  "fields": [
+    {
+      "name": "region",
+      "label": "Region",
+      "type": "string",
+      "component": "select",
+      "required": true,
+      "source": "context",
+      "sourcePath": "project.regionScope",
+      "placeholder": "Select region",
+      "ariaLabel": "Select deployment region",
+      "dependencies": {
+        "onChange": {
+          "reset": ["availabilityZone"]
+        }
+      }
+    },
+    {
+      "name": "availabilityZone",
+      "label": "Availability Zone",
+      "type": "string",
+      "component": "select",
+      "required": true,
+      "source": "api",
+      "sourcePath": "/api/regions/{region}/availability-zones",
+      "placeholder": "Select availability zone",
+      "ariaLabel": "Select availability zone",
+      "dependsOn": ["region"],
+      "disabled": {
+        "when": "!region"
+      },
+      "dependencies": {
+        "onChange": {
+          "reset": []
+        }
+      }
+    },
+    {
+      "name": "name",
+      "label": "Server Name",
+      "type": "string",
+      "component": "text",
+      "required": true,
+      "placeholder": "Enter server name",
+      "ariaLabel": "Server name input",
+      "validation": {
+        "minLength": 1,
+        "maxLength": 255
+      }
+    },
+    {
+      "name": "count",
+      "label": "Instance Count",
+      "type": "integer",
+      "component": "number",
+      "required": true,
+      "default": 1,
+      "min": 1,
+      "max": {
+        "source": "context",
+        "sourcePath": "project.quota.instanceCount"
+      },
+      "ariaLabel": "Number of instances to create",
+      "validation": {
+        "quota": {
+          "resourceType": "instanceCount",
+          "source": "context",
+          "sourcePath": "project.value.quota.instanceCount"
+        }
+      }
+    },
+    {
+      "name": "dryRun",
+      "label": "Enable Dry Run",
+      "type": "boolean",
+      "component": "switch",
+      "required": false,
+      "default": true,
+      "ariaLabel": "Enable dry run mode",
+      "description": "Preview changes without applying them"
+    }
+  ]
+}
+

@@ -3,9 +3,10 @@
 interface EIPTypeSelectorProps {
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
-export default function EIPTypeSelector({ value, onChange }: EIPTypeSelectorProps) {
+export default function EIPTypeSelector({ value, onChange, disabled = false }: EIPTypeSelectorProps) {
   const eipTypes = [
     { value: '5_bgp', label: '5_bgp' },
     { value: '5_sbgp', label: '5_sbgp' },
@@ -17,7 +18,8 @@ export default function EIPTypeSelector({ value, onChange }: EIPTypeSelectorProp
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+        disabled={disabled}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <option value="">Select EIP type</option>
         {eipTypes.map((type) => (

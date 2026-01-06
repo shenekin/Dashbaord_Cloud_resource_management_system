@@ -54,7 +54,11 @@ export function serverFormToApi(formData: ServerFormData): ServerApiRequest {
     subnet_id: formData.network.subnet,
     private_ip: formData.ip.privateIP,
     enable_ipv6: formData.ip.enableIPv6,
-    public_ip: formData.ip.publicIP,
+    public_ip: formData.ip.publicIP ? {
+      eip_type: formData.ip.publicIP.eipType,
+      bandwidth_type: formData.ip.publicIP.bandwidthType,
+      bandwidth_size: formData.ip.publicIP.bandwidthSize,
+    } : undefined,
     charging_mode: formData.billing.chargingMode,
     auto_terminate_time: formData.billing.autoTerminateTime,
     tags: formData.tags.tags.length > 0 ? formData.tags.tags : undefined,

@@ -1,0 +1,42 @@
+{
+  "section": "network",
+  "title": "Network Configuration",
+  "fields": [
+    {
+      "name": "vpc",
+      "label": "VPC",
+      "type": "string",
+      "component": "select",
+      "required": true,
+      "source": "api",
+      "sourcePath": "/api/vpcs?region={region}",
+      "placeholder": "Select VPC",
+      "ariaLabel": "Select Virtual Private Cloud",
+      "dependsOn": ["region", "availabilityZone"],
+      "disabled": {
+        "when": "!region || !availabilityZone"
+      },
+      "dependencies": {
+        "onChange": {
+          "reset": ["subnet"]
+        }
+      }
+    },
+    {
+      "name": "subnet",
+      "label": "Subnet",
+      "type": "string",
+      "component": "select",
+      "required": true,
+      "source": "api",
+      "sourcePath": "/api/vpcs/{vpc}/subnets",
+      "placeholder": "Select subnet",
+      "ariaLabel": "Select subnet",
+      "dependsOn": ["vpc"],
+      "disabled": {
+        "when": "!vpc"
+      }
+    }
+  ]
+}
+

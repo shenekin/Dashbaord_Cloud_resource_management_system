@@ -1,0 +1,48 @@
+{
+  "section": "storage",
+  "title": "Storage Configuration",
+  "fields": [
+    {
+      "name": "systemDisk",
+      "label": "System Disk",
+      "type": "object",
+      "component": "object",
+      "required": true,
+      "properties": {
+        "type": {
+          "name": "type",
+          "label": "Disk Type",
+          "type": "string",
+          "component": "select",
+          "required": true,
+          "enum": ["SSD", "SAS", "SATA"],
+          "placeholder": "Select disk type",
+          "ariaLabel": "System disk type"
+        },
+        "size": {
+          "name": "size",
+          "label": "Disk Size (GB)",
+          "type": "integer",
+          "component": "number",
+          "required": true,
+          "min": 40,
+          "max": 1024,
+          "default": 40,
+          "ariaLabel": "System disk size in GB"
+        }
+      }
+    },
+    {
+      "name": "dataDisks",
+      "label": "Data Disks",
+      "type": "array",
+      "component": "array",
+      "required": false,
+      "description": "Optional additional data disks"
+    }
+  ],
+  "dependencies": {
+    "systemDisk": ["region", "availabilityZone"]
+  }
+}
+

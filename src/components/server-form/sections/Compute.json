@@ -1,0 +1,57 @@
+{
+  "section": "compute",
+  "title": "Compute Configuration",
+  "fields": [
+    {
+      "name": "flavor",
+      "label": "Instance Flavor",
+      "type": "string",
+      "component": "select",
+      "required": true,
+      "source": "api",
+      "sourcePath": "/api/flavors?region={region}&availabilityZone={availabilityZone}",
+      "placeholder": "Select instance flavor",
+      "ariaLabel": "Select instance flavor (CPU and memory)",
+      "dependsOn": ["region", "availabilityZone"],
+      "disabled": {
+        "when": "!region || !availabilityZone"
+      },
+      "description": "Defines CPU and memory capacity"
+    },
+    {
+      "name": "image",
+      "label": "Image",
+      "type": "string",
+      "component": "select",
+      "required": true,
+      "source": "api",
+      "sourcePath": "/api/images?region={region}",
+      "placeholder": "Select operating system image",
+      "ariaLabel": "Select operating system or custom image",
+      "dependsOn": ["region"],
+      "disabled": {
+        "when": "!region"
+      },
+      "description": "Operating system or custom image"
+    },
+    {
+      "name": "adminPassword",
+      "label": "Administrator Password",
+      "type": "string",
+      "component": "text",
+      "required": true,
+      "placeholder": "Enter administrator password",
+      "ariaLabel": "Administrator password input",
+      "validation": {
+        "minLength": 8,
+        "maxLength": 64,
+        "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
+      },
+      "description": "Initial administrator password (min 8 chars, must include uppercase, lowercase, number, and special character)"
+    }
+  ],
+  "dependencies": {
+    "flavor": ["region", "availabilityZone"],
+    "image": ["region"]
+  }
+}

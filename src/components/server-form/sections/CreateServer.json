@@ -1,0 +1,48 @@
+{
+  "title": "Create Server Request",
+  "description": "Complete schema for creating a virtual machine",
+  "type": "object",
+  "required": ["basicInfo", "compute", "storage", "network"],
+  "properties": {
+    "basicInfo": {
+      "$ref": "#/definitions/BasicInfo"
+    },
+    "compute": {
+      "$ref": "#/definitions/Compute"
+    },
+    "storage": {
+      "$ref": "#/definitions/Storage"
+    },
+    "network": {
+      "$ref": "#/definitions/Network"
+    },
+    "tags": {
+      "type": "object",
+      "title": "Tags",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "billing": {
+      "type": "object",
+      "title": "Billing",
+      "properties": {
+        "chargingMode": {
+          "type": "string",
+          "enum": ["PAY_PER_USE", "MONTHLY"]
+        },
+        "autoTerminateTime": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "BasicInfo": { },
+    "Compute": { },
+    "Storage": { },
+    "Network": { }
+  },
+  "additionalProperties": false
+}
