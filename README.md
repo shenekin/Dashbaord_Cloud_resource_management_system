@@ -100,22 +100,21 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-## API 端点
 
-Dashboard 使用聚合 API 端点，所有数据通过 `/dashboard/*` 路径获取：
+Dashboard `/dashboard/*` ：
 
-- `/dashboard/system/health` - 系统健康状态
-- `/dashboard/alerts/active` - 活跃告警数量
-- `/dashboard/approvals/pending` - 待审批数量
-- `/dashboard/gateway/metrics` - 网关指标
-- `/dashboard/users/stats` - 用户统计
-- `/dashboard/resources/ecs/status` - ECS 状态
-- `/dashboard/projects/usage` - 项目资源使用
-- `/dashboard/alerts/list` - 告警列表
-- `/dashboard/automation/tasks` - 自动化任务
-- `/dashboard/cost/overview` - 成本概览
-- `/dashboard/audit/logs` - 审计日志
-- `/dashboard/notifications/recent` - 最近通知
+- `/dashboard/system/health` - 
+- `/dashboard/alerts/active` - 
+- `/dashboard/approvals/pending` - 
+- `/dashboard/gateway/metrics` - 
+- `/dashboard/users/stats` - 
+- `/dashboard/resources/ecs/status` - 
+- `/dashboard/projects/usage` - 
+- `/dashboard/alerts/list` - 
+- `/dashboard/automation/tasks` -
+- `/dashboard/cost/overview` -
+- `/dashboard/audit/logs` - 
+- `/dashboard/notifications/recent` 
 
 ## Features
 
