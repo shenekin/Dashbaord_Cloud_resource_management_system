@@ -17,6 +17,7 @@ import {
   Lock,
   ChevronDown,
   Cloud,
+  KeyRound,
 } from 'lucide-react';
 import { useUIStore } from '@/store/useUIStore';
 import { cn } from '@/lib/utils';
@@ -72,6 +73,7 @@ export default function Sidebar() {
     { id: 'billing', label: 'Billing', path: '/billing', icon: DollarSign },
     { id: 'audit', label: 'Audit Logs', path: '/audit', icon: FileText },
     { id: 'notifications', label: 'Notifications', path: '/notifications', icon: Bell },
+    { id: 'credentials', label: 'Credentials Management', path: '/credentials', icon: KeyRound },
   ];
 
   const handleMenuClick = (path: string) => {
