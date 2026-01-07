@@ -523,7 +523,7 @@ class CredentialsApiClient {
   private baseURL: string;
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+    this.baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001';
     this.client = axios.create({
       baseURL: this.baseURL,
       timeout: 30000,

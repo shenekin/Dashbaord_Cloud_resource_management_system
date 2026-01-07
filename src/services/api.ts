@@ -7,7 +7,7 @@ import { ApiResponse } from '@/types';
 class ApiClient {
   private client: AxiosInstance;
 
-  constructor(baseURL: string = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000') {
+  constructor(baseURL: string = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001') {
     this.client = axios.create({
       baseURL,
       timeout: 30000,

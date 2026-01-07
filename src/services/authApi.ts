@@ -8,11 +8,11 @@ function getApiBaseUrl(): string {
     // Client-side: use environment variable or default
     const protocol = process.env.NEXT_PUBLIC_API_PROTOCOL || 'http';
     const host = process.env.NEXT_PUBLIC_API_HOST || 'localhost';
-    const port = process.env.NEXT_PUBLIC_API_PORT || '8000';
+    const port = process.env.NEXT_PUBLIC_API_PORT || '8001';
     return `${protocol}://${host}:${port}`;
   }
   // Server-side: use environment variable or default
-  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001';
 }
 
 /**
