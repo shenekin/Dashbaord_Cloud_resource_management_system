@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../store/authStore';
 import { LoginRequest, RegisterRequest } from '../types/identity';
-import { authApi } from '@/services/authApi';
+import { authApi } from '@/services/api';
 
 /**
  * Auth hook for identity module

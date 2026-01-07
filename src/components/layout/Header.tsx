@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Search, Bell, User, LogOut, Menu, KeyRound } from 'lucide-react';
 import { useAuthStore } from '@/app/identity/store/authStore';
 import { useUIStore } from '@/store/useUIStore';
-import { authApi } from '@/services/authApi';
+import { authApi } from '@/services/api';
 import PasswordInput from '@/app/identity/components/PasswordInput';
 import ErrorAlert from '@/app/identity/components/ErrorAlert';
 import LoadingButton from '@/app/identity/components/LoadingButton';
