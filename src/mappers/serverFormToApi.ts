@@ -5,6 +5,7 @@ export interface ServerApiRequest {
   availability_zone: string;
   name: string;
   count: number;
+  credential_id?: string; // Credential ID (AK/SK) for cloud provider authentication
   flavor: string;
   image: string;
   admin_password: string;
@@ -42,6 +43,7 @@ export function serverFormToApi(formData: ServerFormData): ServerApiRequest {
     availability_zone: formData.basic.az,
     name: formData.basic.name,
     count: formData.basic.count,
+    credential_id: formData.basic.credentialId,
     flavor: formData.compute.flavor,
     image: formData.compute.image,
     admin_password: formData.compute.adminPassword,

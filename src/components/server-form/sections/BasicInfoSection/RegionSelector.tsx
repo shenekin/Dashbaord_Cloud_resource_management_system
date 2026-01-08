@@ -15,9 +15,10 @@ interface RegionSelectorProps {
   error?: string;
   onChange: (value: string) => void;
   onResetDownstream?: () => void;
+  disabled?: boolean;
 }
 
-export default function RegionSelector({ value, error, onChange, onResetDownstream }: RegionSelectorProps) {
+export default function RegionSelector({ value, error, onChange, onResetDownstream, disabled = false }: RegionSelectorProps) {
   const { project } = useProject();
   const [loading, setLoading] = useState(false);
   const [regions, setRegions] = useState<Array<{ value: string; label: string }>>([]);
@@ -63,13 +64,14 @@ export default function RegionSelector({ value, error, onChange, onResetDownstre
           id="region-select"
           value={value}
           onChange={(e) => handleChange(e.target.value)}
+          disabled={disabled}
           aria-label="Select deployment region"
           aria-required="true"
           aria-invalid={!!error}
           aria-describedby={error ? 'region-error' : undefined}
           className={`w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 ${
             error ? 'border-red-400 bg-red-50' : 'border-gray-200'
-          }`}
+          } ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''}`}
         >
           <option value="">Select a region</option>
           {regions.map((region) => (

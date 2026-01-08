@@ -1,6 +1,9 @@
 // Server form data types
 
 export interface BasicInfo {
+  customer?: string; // Customer name (must be selected before region)
+  provider?: string; // Provider name (must be selected before region)
+  credentialId?: string; // Credential ID (AK/SK) for ECS server creation
   region: string;
   az: string;
   name: string;

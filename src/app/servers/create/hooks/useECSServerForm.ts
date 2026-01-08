@@ -7,6 +7,9 @@ import { ServerFormData } from '@/types/server';
 
 const initialFormData: ServerFormData = {
   basic: {
+    customer: '',
+    provider: '',
+    credentialId: '',
     region: '',
     az: '',
     name: '',
