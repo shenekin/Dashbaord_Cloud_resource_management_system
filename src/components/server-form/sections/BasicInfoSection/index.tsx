@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { BasicInfo } from '@/types/server';
-import { credentialsApi, Credential } from '@/services/credentialsApi';
+import { credentialsApi, Credential } from '@/services/api';
 import RegionSelector from './RegionSelector';
 import AZSelector from './AZSelector';
 import ServerNameInput from './ServerNameInput';
@@ -188,106 +188,123 @@ export default function BasicInfoSection({
         <p className="text-blue-100 text-sm mt-1.5">Configure region, availability zone, and server details</p>
       </div>
       <div className="p-8">
-        {/* Customer and Provider Selection - Must be before Region */}
-        <div className="mb-6 pb-6 border-b border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Credentials Selection</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Customer Selector */}
-            <div>
-              <label htmlFor="customer-select" className="block text-sm font-semibold text-gray-700 mb-2">
-                Customer <span className="text-red-500">*</span>
-              </label>
-              {loadingCredentials ? (
-                <div className="px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-500 text-sm">
-                  Loading customers...
-                </div>
-              ) : availableCustomers.length === 0 ? (
-                <div className="px-4 py-3 border border-yellow-300 rounded-xl bg-yellow-50 text-yellow-700 text-sm">
-                  No customers found. Please add credentials in the{' '}
-                  <a href="/credentials" className="underline font-semibold" target="_blank" rel="noopener noreferrer">
-                    Credentials Management
-                  </a>{' '}
-                  page.
-                </div>
-              ) : (
-                <select
-                  id="customer-select"
-                  value={formValue.customer || ''}
-                  onChange={(e) => handleCustomerChange(e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 transition-all duration-200 shadow-sm hover:border-gray-400 ${
-                    errors['basic.customer'] ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  aria-label="Select customer"
-                  required
-                >
-                  <option value="">-- Select Customer --</option>
-                  {availableCustomers.map((customer) => (
-                    <option key={customer} value={customer}>
-                      {customer}
-                    </option>
-                  ))}
-                </select>
-              )}
-              {errors['basic.customer'] && (
-                <p className="mt-1 text-sm text-red-600">{errors['basic.customer']}</p>
-              )}
-            </div>
-
-            {/* Provider Selector */}
-            <div>
-              <label htmlFor="provider-select" className="block text-sm font-semibold text-gray-700 mb-2">
-                Provider <span className="text-red-500">*</span>
-              </label>
-              {loadingCredentials ? (
-                <div className="px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-500 text-sm">
-                  Loading providers...
-                </div>
-              ) : !formValue.customer ? (
-                <div className="px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-500 text-sm">
-                  Please select a customer first
-                </div>
-              ) : availableProviders.length === 0 ? (
-                <div className="px-4 py-3 border border-yellow-300 rounded-xl bg-yellow-50 text-yellow-700 text-sm">
-                  No providers found for selected customer.
-                </div>
-              ) : (
-                <select
-                  id="provider-select"
-                  value={formValue.provider || ''}
-                  onChange={(e) => handleProviderChange(e.target.value)}
-                  disabled={!formValue.customer}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 transition-all duration-200 shadow-sm hover:border-gray-400 ${
-                    errors['basic.provider'] ? 'border-red-300' : 'border-gray-300'
-                  } ${!formValue.customer ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  aria-label="Select provider"
-                  required
-                >
-                  <option value="">-- Select Provider --</option>
-                  {availableProviders
-                    .filter(provider => 
-                      allCredentials.some(c => c.customer === formValue.customer && c.provider === provider)
-                    )
-                    .map((provider) => (
-                      <option key={provider} value={provider}>
-                        {provider}
-                      </option>
-                    ))}
-                </select>
-              )}
-              {errors['basic.provider'] && (
-                <p className="mt-1 text-sm text-red-600">{errors['basic.provider']}</p>
-              )}
-            </div>
+        {/* Customer, Provider, and Credential Selection - Must be before Region */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6" role="group" aria-labelledby="basic-info-heading">
+          {/* Customer Selector */}
+          <div>
+            <label htmlFor="customer-select" className="block text-sm font-semibold text-gray-700 mb-2">
+              Customer <span className="text-red-500">*</span>
+            </label>
+            {loadingCredentials ? (
+              <div className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50 flex items-center shadow-sm">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent mr-3"></div>
+                <span className="text-sm text-gray-600 font-medium">Loading customers...</span>
+              </div>
+            ) : availableCustomers.length === 0 ? (
+              <div className="px-4 py-3 border-2 border-yellow-300 rounded-xl bg-yellow-50 text-yellow-700 text-sm shadow-sm">
+                No customers found. Please add credentials in the{' '}
+                <a href="/credentials" className="underline font-semibold" target="_blank" rel="noopener noreferrer">
+                  Credentials Management
+                </a>{' '}
+                page.
+              </div>
+            ) : (
+              <select
+                id="customer-select"
+                value={formValue.customer || ''}
+                onChange={(e) => handleCustomerChange(e.target.value)}
+                aria-label="Select customer"
+                aria-required="true"
+                aria-invalid={!!errors['basic.customer']}
+                aria-describedby={errors['basic.customer'] ? 'customer-error' : undefined}
+                className={`w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 ${
+                  errors['basic.customer'] ? 'border-red-400 bg-red-50' : 'border-gray-200'
+                }`}
+                required
+              >
+                <option value="">Select a customer</option>
+                {availableCustomers.map((customer) => (
+                  <option key={customer} value={customer}>
+                    {customer}
+                  </option>
+                ))}
+              </select>
+            )}
+            {errors['basic.customer'] && (
+              <p id="customer-error" className="mt-2 text-sm text-red-600 font-medium flex items-center gap-1" role="alert">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {errors['basic.customer']}
+              </p>
+            )}
           </div>
 
-          {/* Credential Selection */}
+          {/* Provider Selector */}
+          <div>
+            <label htmlFor="provider-select" className="block text-sm font-semibold text-gray-700 mb-2">
+              Provider <span className="text-red-500">*</span>
+            </label>
+            {loadingCredentials ? (
+              <div className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50 flex items-center shadow-sm">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent mr-3"></div>
+                <span className="text-sm text-gray-600 font-medium">Loading providers...</span>
+              </div>
+            ) : !formValue.customer ? (
+              <div className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50 text-gray-500 text-sm shadow-sm">
+                Please select a customer first
+              </div>
+            ) : availableProviders.filter(provider => 
+                allCredentials.some(c => c.customer === formValue.customer && c.provider === provider)
+              ).length === 0 ? (
+              <div className="px-4 py-3 border-2 border-yellow-300 rounded-xl bg-yellow-50 text-yellow-700 text-sm shadow-sm">
+                No providers found for selected customer.
+              </div>
+            ) : (
+              <select
+                id="provider-select"
+                value={formValue.provider || ''}
+                onChange={(e) => handleProviderChange(e.target.value)}
+                disabled={!formValue.customer}
+                aria-label="Select provider"
+                aria-required="true"
+                aria-invalid={!!errors['basic.provider']}
+                aria-describedby={errors['basic.provider'] ? 'provider-error' : undefined}
+                className={`w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 ${
+                  errors['basic.provider'] ? 'border-red-400 bg-red-50' : 'border-gray-200'
+                } ${!formValue.customer ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''}`}
+                required
+              >
+                <option value="">Select a provider</option>
+                {availableProviders
+                  .filter(provider => 
+                    allCredentials.some(c => c.customer === formValue.customer && c.provider === provider)
+                  )
+                  .map((provider) => (
+                    <option key={provider} value={provider}>
+                      {provider}
+                    </option>
+                  ))}
+              </select>
+            )}
+            {errors['basic.provider'] && (
+              <p id="provider-error" className="mt-2 text-sm text-red-600 font-medium flex items-center gap-1" role="alert">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {errors['basic.provider']}
+              </p>
+            )}
+          </div>
+
+          {/* Credential Selection - Full width when visible */}
           {formValue.customer && formValue.provider && (
-            <div className="mt-4">
+            <div className="md:col-span-2">
               <label htmlFor="credential-select" className="block text-sm font-semibold text-gray-700 mb-2">
                 Credential (AK/SK) <span className="text-red-500">*</span>
               </label>
               {filteredCredentials.length === 0 ? (
-                <div className="px-4 py-3 border border-yellow-300 rounded-xl bg-yellow-50 text-yellow-700 text-sm">
+                <div className="px-4 py-3 border-2 border-yellow-300 rounded-xl bg-yellow-50 text-yellow-700 text-sm shadow-sm">
                   No credentials found for {formValue.customer} - {formValue.provider}. 
                   Please add credentials in the{' '}
                   <a href="/credentials" className="underline font-semibold" target="_blank" rel="noopener noreferrer">
@@ -300,13 +317,16 @@ export default function BasicInfoSection({
                   id="credential-select"
                   value={formValue.credentialId || ''}
                   onChange={(e) => handleCredentialChange(e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 transition-all duration-200 shadow-sm hover:border-gray-400 ${
-                    errors['basic.credentialId'] ? 'border-red-300' : 'border-gray-300'
-                  }`}
                   aria-label="Select credential"
+                  aria-required="true"
+                  aria-invalid={!!errors['basic.credentialId']}
+                  aria-describedby={errors['basic.credentialId'] ? 'credential-error' : undefined}
+                  className={`w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 ${
+                    errors['basic.credentialId'] ? 'border-red-400 bg-red-50' : 'border-gray-200'
+                  }`}
                   required
                 >
-                  <option value="">-- Select Credential --</option>
+                  <option value="">Select a credential</option>
                   {filteredCredentials.map((credential) => (
                     <option key={credential.id} value={credential.id}>
                       {credential.customer} - {credential.provider} (AK: {credential.access_key.substring(0, 8)}...)
@@ -315,7 +335,12 @@ export default function BasicInfoSection({
                 </select>
               )}
               {errors['basic.credentialId'] && (
-                <p className="mt-1 text-sm text-red-600">{errors['basic.credentialId']}</p>
+                <p id="credential-error" className="mt-2 text-sm text-red-600 font-medium flex items-center gap-1" role="alert">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {errors['basic.credentialId']}
+                </p>
               )}
             </div>
           )}
