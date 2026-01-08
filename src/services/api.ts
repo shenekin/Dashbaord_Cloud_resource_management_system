@@ -556,3 +556,177 @@ export const credentialsApi = {
     return apiClient.delete<void>(endpoint);
   },
 };
+
+/**
+ * Customer API types
+ */
+export interface Customer {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CustomerResponse {
+  items: Customer[];
+  total: number;
+  page?: number;
+  page_size?: number;
+  total_pages?: number;
+}
+
+/**
+ * Customer API endpoints
+ * Handles all customer-related API calls through gateway-service
+ */
+export const customersApi = {
+  /**
+   * Get all customers
+   * GET /api/v1/customers
+   */
+  getCustomers: async (params?: {
+    page?: number;
+    page_size?: number;
+    name?: string;
+  }): Promise<CustomerResponse> => {
+    const endpoint = process.env.NEXT_PUBLIC_CUSTOMERS_BASE!;
+    
+    return apiClient.get<CustomerResponse>(endpoint, params);
+  },
+
+  /**
+   * Get customer by ID
+   * GET /api/v1/customers/{customer_id}
+   */
+  getCustomer: async (id: string): Promise<Customer> => {
+    const endpoint = process.env.NEXT_PUBLIC_CUSTOMERS_BY_ID!.replace('{customer_id}', id);
+    
+    return apiClient.get<Customer>(endpoint);
+  },
+
+  /**
+   * Create new customer
+   * POST /api/v1/customers
+   */
+  createCustomer: async (data: {
+    name: string;
+  }): Promise<Customer> => {
+    const endpoint = process.env.NEXT_PUBLIC_CUSTOMERS_BASE!;
+    
+    return apiClient.post<Customer>(endpoint, data);
+  },
+
+  /**
+   * Update customer
+   * PUT /api/v1/customers/{customer_id}
+   */
+  updateCustomer: async (
+    id: string,
+    data: {
+      name: string;
+    }
+  ): Promise<Customer> => {
+    const endpoint = process.env.NEXT_PUBLIC_CUSTOMERS_BY_ID!.replace('{customer_id}', id);
+    
+    return apiClient.put<Customer>(endpoint, data);
+  },
+
+  /**
+   * Delete customer
+   * DELETE /api/v1/customers/{customer_id}
+   */
+  deleteCustomer: async (id: string): Promise<void> => {
+    const endpoint = process.env.NEXT_PUBLIC_CUSTOMERS_BY_ID!.replace('{customer_id}', id);
+    
+    return apiClient.delete<void>(endpoint);
+  },
+};
+
+/**
+ * Vendor/Provider API types
+ */
+export interface Vendor {
+  id: string;
+  name: string;
+  type?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface VendorResponse {
+  items: Vendor[];
+  total: number;
+  page?: number;
+  page_size?: number;
+  total_pages?: number;
+}
+
+/**
+ * Vendor/Provider API endpoints
+ * Handles all vendor/provider-related API calls through gateway-service
+ */
+export const vendorsApi = {
+  /**
+   * Get all vendors/providers
+   * GET /api/v1/vendors
+   */
+  getVendors: async (params?: {
+    page?: number;
+    page_size?: number;
+    name?: string;
+    type?: string;
+  }): Promise<VendorResponse> => {
+    const endpoint = process.env.NEXT_PUBLIC_VENDORS_BASE!;
+    
+    return apiClient.get<VendorResponse>(endpoint, params);
+  },
+
+  /**
+   * Get vendor by ID
+   * GET /api/v1/vendors/{vendor_id}
+   */
+  getVendor: async (id: string): Promise<Vendor> => {
+    const endpoint = process.env.NEXT_PUBLIC_VENDORS_BY_ID!.replace('{vendor_id}', id);
+    
+    return apiClient.get<Vendor>(endpoint);
+  },
+
+  /**
+   * Create new vendor/provider
+   * POST /api/v1/vendors
+   */
+  createVendor: async (data: {
+    name: string;
+    type?: string;
+  }): Promise<Vendor> => {
+    const endpoint = process.env.NEXT_PUBLIC_VENDORS_BASE!;
+    
+    return apiClient.post<Vendor>(endpoint, data);
+  },
+
+  /**
+   * Update vendor/provider
+   * PUT /api/v1/vendors/{vendor_id}
+   */
+  updateVendor: async (
+    id: string,
+    data: {
+      name?: string;
+      type?: string;
+    }
+  ): Promise<Vendor> => {
+    const endpoint = process.env.NEXT_PUBLIC_VENDORS_BY_ID!.replace('{vendor_id}', id);
+    
+    return apiClient.put<Vendor>(endpoint, data);
+  },
+
+  /**
+   * Delete vendor/provider
+   * DELETE /api/v1/vendors/{vendor_id}
+   */
+  deleteVendor: async (id: string): Promise<void> => {
+    const endpoint = process.env.NEXT_PUBLIC_VENDORS_BY_ID!.replace('{vendor_id}', id);
+    
+    return apiClient.delete<void>(endpoint);
+  },
+};
