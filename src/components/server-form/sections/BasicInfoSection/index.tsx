@@ -7,9 +7,9 @@ import AZSelector from './AZSelector';
 import ServerNameInput from './ServerNameInput';
 import InstanceCountInput from './InstanceCountInput';
 import DryRunSwitch from './DryRunSwitch';
-import CredentialSelector from './CredentialSelector';
 import { customersApi, Customer } from '@/services/customersApi';
 import { vendorsApi, Vendor } from '@/services/vendorsApi';
+import { credentialsApi, Credential } from '@/services/credentialsApi';
 
 /**
  * BasicInfoSection Component
@@ -68,7 +68,10 @@ export default function BasicInfoSection({
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
   const [loadingVendors, setLoadingVendors] = useState(false);
-  const [activeTab, setActiveTab] = useState<'customer' | 'provider'>('customer');
+  
+  // State for credential auto-selection
+  const [selectedCredential, setSelectedCredential] = useState<Credential | null>(null);
+  const [loadingCredential, setLoadingCredential] = useState(false);
 
   // Load customers and vendors on mount
   useEffect(() => {
@@ -120,15 +123,89 @@ export default function BasicInfoSection({
     }
   };
 
-  // Handle customer change - reset credential
+  /**
+   * Automatically fetch and set credential when both customer and vendor are selected
+   * The credential is determined by customer_id and vendor_id combination
+   * This eliminates the need for manual credential selection - the system automatically
+   * determines the correct credential (AK/SK) based on the customer-provider combination
+   */
+  useEffect(() => {
+    const autoSelectCredential = async () => {
+      if (!formValue.customer_id || !formValue.vendor_id) {
+        // Reset credential if customer or vendor is not selected
+        if (selectedCredential !== null || formValue.credential_id !== undefined) {
+          setSelectedCredential(null);
+          onChange({ credential_id: undefined });
+        }
+        return;
+      }
+
+      // Skip if credential is already set and matches the current selection
+      if (selectedCredential && 
+          selectedCredential.customer_id === formValue.customer_id &&
+          selectedCredential.vendor_id === formValue.vendor_id &&
+          formValue.credential_id === selectedCredential.id) {
+        return;
+      }
+
+      setLoadingCredential(true);
+      try {
+        // Fetch credentials for the selected customer
+        const response = await credentialsApi.getCredentials({
+          customer_id: formValue.customer_id,
+          page: 1,
+          page_size: 100
+        });
+
+        // Filter by vendor_id and only active credentials
+        const activeCredentials = response.items.filter(
+          cred => cred.status === 'active' && cred.vendor_id === formValue.vendor_id
+        );
+
+        // Auto-select the first available credential for this customer-vendor combination
+        if (activeCredentials.length > 0) {
+          const credential = activeCredentials[0];
+          // Only update if credential has changed
+          if (!selectedCredential || selectedCredential.id !== credential.id) {
+            setSelectedCredential(credential);
+            onChange({ credential_id: credential.id });
+          }
+        } else {
+          // No credential available for this combination
+          if (selectedCredential !== null || formValue.credential_id !== undefined) {
+            setSelectedCredential(null);
+            onChange({ credential_id: undefined });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load credential:', err);
+        if (selectedCredential !== null || formValue.credential_id !== undefined) {
+          setSelectedCredential(null);
+          onChange({ credential_id: undefined });
+        }
+      } finally {
+        setLoadingCredential(false);
+      }
+    };
+
+    autoSelectCredential();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formValue.customer_id, formValue.vendor_id]);
+
+  /**
+   * Handle customer change - reset vendor and credential
+   */
   const handleCustomerChange = (customerId: number | undefined) => {
     onChange({ 
       customer_id: customerId,
+      vendor_id: undefined, // Reset vendor when customer changes
       credential_id: undefined // Reset credential when customer changes
     });
   };
 
-  // Handle vendor change - reset credential
+  /**
+   * Handle vendor change - reset credential
+   */
   const handleVendorChange = (vendorId: number | undefined) => {
     onChange({ 
       vendor_id: vendorId,
@@ -136,59 +213,39 @@ export default function BasicInfoSection({
     });
   };
 
-  // Handle credential change
-  const handleCredentialChange = (credentialId: number | undefined) => {
-    onChange({ credential_id: credentialId });
+  /**
+   * Mask access key to show only first 4 characters for security
+   */
+  const maskAccessKey = (ak: string): string => {
+    if (!ak) return '';
+    if (ak.includes('*')) return ak; // Already masked
+    if (ak.length > 4) {
+      return ak.substring(0, 4) + '*'.repeat(ak.length - 4);
+    }
+    return '*'.repeat(ak.length);
   };
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 overflow-hidden">
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-3.5">
-        <h2 className="text-lg font-bold text-white flex items-center gap-2">
-          <div className="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">1</span>
+    <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/50 overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2.5">
+        <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-xs">1</span>
           </div>
           Basic Information
         </h2>
-        <p className="text-blue-100 text-xs mt-1">Configure region, availability zone, credentials, and server details</p>
+        <p className="text-blue-100 text-xs mt-0.5">Configure region, availability zone, credentials, and server details</p>
       </div>
-      <div className="p-5">
-        {/* Customer and Provider Tabs */}
-        <div className="mb-4 border-b border-gray-200">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setActiveTab('customer')}
-              className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 ${
-                activeTab === 'customer'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Customer
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('provider')}
-              className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 ${
-                activeTab === 'provider'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Provider
-            </button>
-          </div>
-        </div>
-
-        {/* Customer Tab Content */}
-        {activeTab === 'customer' && (
-          <div className="mb-4">
-            <label htmlFor="customer-select" className="block text-sm font-semibold text-gray-700 mb-2">
+      <div className="p-4">
+        {/* Customer and Provider Selection - Side by Side */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+          {/* Customer Selection - Left */}
+          <div>
+            <label htmlFor="customer-select" className="block text-sm font-semibold text-gray-700 mb-1.5">
               Customer <span className="text-red-500">*</span>
             </label>
             {loadingCustomers ? (
-              <div className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 flex items-center gap-2">
+              <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-400 border-t-transparent"></div>
                 Loading customers...
               </div>
@@ -220,16 +277,14 @@ export default function BasicInfoSection({
               <p className="mt-1 text-xs text-red-600">{errors['basic.customer_id']}</p>
             )}
           </div>
-        )}
 
-        {/* Provider Tab Content */}
-        {activeTab === 'provider' && (
-          <div className="mb-4">
-            <label htmlFor="vendor-select" className="block text-sm font-semibold text-gray-700 mb-2">
+          {/* Provider Selection - Right */}
+          <div>
+            <label htmlFor="vendor-select" className="block text-sm font-semibold text-gray-700 mb-1.5">
               Provider <span className="text-red-500">*</span>
             </label>
             {loadingVendors ? (
-              <div className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 flex items-center gap-2">
+              <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-400 border-t-transparent"></div>
                 Loading providers...
               </div>
@@ -261,21 +316,37 @@ export default function BasicInfoSection({
               <p className="mt-1 text-xs text-red-600">{errors['basic.vendor_id']}</p>
             )}
           </div>
-        )}
-
-        {/* Credential Selector */}
-        <div className="mb-4">
-          <CredentialSelector
-            customerId={formValue.customer_id}
-            vendorId={formValue.vendor_id}
-            value={formValue.credential_id}
-            onChange={handleCredentialChange}
-            error={errors['basic.credential_id']}
-          />
         </div>
 
+        {/* Credential Auto-Selection Display - Show selected credential info */}
+        {formValue.customer_id && formValue.vendor_id && (
+          <div className="mb-3">
+            {loadingCredential ? (
+              <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-400 border-t-transparent"></div>
+                Loading credential...
+              </div>
+            ) : selectedCredential ? (
+              <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs text-blue-800 font-medium">
+                  Credential: {selectedCredential.customer_name} - {selectedCredential.vendor_display_name} (AK: {maskAccessKey(selectedCredential.access_key)})
+                </p>
+              </div>
+            ) : (
+              <div className="px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-xs text-amber-700">
+                  No credential available for this customer and provider combination. Please create credentials first.
+                </p>
+              </div>
+            )}
+            {errors['basic.credential_id'] && (
+              <p className="mt-1 text-xs text-red-600">{errors['basic.credential_id']}</p>
+            )}
+          </div>
+        )}
+
         {/* Region, AZ, Name, Count - More Compact Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" role="group" aria-labelledby="basic-info-heading">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3" role="group" aria-labelledby="basic-info-heading">
           <RegionSelector
             value={formValue.region}
             error={errors['basic.region']}
@@ -302,7 +373,7 @@ export default function BasicInfoSection({
         </div>
         
         {/* Dry Run Switch - More Compact */}
-        <div className="pt-4 border-t border-gray-100">
+        <div className="pt-3 border-t border-gray-100">
           <DryRunSwitch
             checked={formValue.dryRun ?? true}
             onChange={(dryRun) => onChange({ dryRun })}

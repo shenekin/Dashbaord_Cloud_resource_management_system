@@ -75,6 +75,9 @@ const nextConfig = {
     // Dashboard Routes (via gateway)
     NEXT_PUBLIC_DASHBOARD_BASE: '/dashboard',
     
+    // Version API Routes (via gateway)
+    NEXT_PUBLIC_VERSION_BASE: '/version',
+    
     // ============================================
     // API Configuration Settings
     // ============================================

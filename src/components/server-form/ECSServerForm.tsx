@@ -85,7 +85,7 @@ export default function ECSServerForm() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Basic Information Section */}
       <div id="step-basic" className={!isSectionEnabled('basic') ? 'opacity-50 pointer-events-none' : ''}>
         <BasicInfoSection
@@ -173,8 +173,8 @@ export default function ECSServerForm() {
       </div>
 
       {/* Submit Actions */}
-      <div className="mt-8 pt-6 border-t border-gray-200">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-8">
+      <div className="mt-6 pt-4 border-t border-gray-200">
+        <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/50 p-5">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               {submitError && (

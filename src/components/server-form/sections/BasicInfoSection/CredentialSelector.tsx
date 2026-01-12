@@ -90,25 +90,25 @@ export default function CredentialSelector({
 
   return (
     <div>
-      <label htmlFor="credential-select" className="block text-sm font-semibold text-gray-700 mb-2">
-        Credentials Management Choice <span className="text-red-500">*</span>
+      <label htmlFor="credential-select" className="block text-sm font-semibold text-gray-700 mb-1.5">
+        Credential <span className="text-red-500">*</span>
       </label>
       
       {!customerId || !vendorId ? (
-        <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500">
+        <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500">
           Please select Customer and Provider first
         </div>
       ) : loading ? (
-        <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 flex items-center gap-2">
+        <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 flex items-center gap-2">
           <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-400 border-t-transparent"></div>
           Loading credentials...
         </div>
       ) : errorMessage ? (
-        <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+        <div className="px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
           {errorMessage}
         </div>
       ) : credentials.length === 0 ? (
-        <div className="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+        <div className="px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
           No credentials available for this customer and provider. Please create credentials first.
         </div>
       ) : (
@@ -120,7 +120,7 @@ export default function CredentialSelector({
             onChange(selectedId);
           }}
           className={`
-            w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+            w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
             bg-white text-gray-900 transition-all duration-200 shadow-sm text-sm
             ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 hover:border-gray-400'}
           `}
@@ -138,13 +138,13 @@ export default function CredentialSelector({
       )}
       
       {error && (
-        <p id="credential-error" className="mt-1 text-sm text-red-600" role="alert">
+        <p id="credential-error" className="mt-1 text-xs text-red-600" role="alert">
           {error}
         </p>
       )}
       
       {credentials.length > 0 && value && (
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="mt-1.5 text-xs text-gray-500">
           Selected: {credentials.find(c => c.id === value)?.customer_name} - {credentials.find(c => c.id === value)?.vendor_display_name}
         </p>
       )}

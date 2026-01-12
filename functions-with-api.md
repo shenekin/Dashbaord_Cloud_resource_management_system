@@ -440,18 +440,28 @@ All gateway-service API configuration is centralized in this file. All API servi
 
 ## 13. Version API Functions
 
-**File:** `project-service/app/main.py`
+**File:** `src/services/versionApi.ts`
 
 **Base URL:** Uses `NEXT_PUBLIC_API_BASE_URL` from `next.config.js`
 
 ### Functions:
 
-1. **`GET /version`**
+1. **`versionApi.getVersion()`**
    - **Endpoint:** `GET /version`
+   - **Route Config:** `NEXT_PUBLIC_VERSION_BASE`
    - **Status:** ✅ Implemented
    - **Description:** Get service version information for software iteration tracking
-   - **Response:** Service name, version, API version, build date, and description
+   - **Response:** Service name, version, API version, build date, and optional description/git info
    - **Purpose:** Enable version tracking and software iteration management
+   - **Returns:** `VersionInfo` object with service details
+
+2. **`versionApi.getServiceVersion(serviceName)`**
+   - **Endpoint:** `GET /version/{service_name}`
+   - **Route Config:** `NEXT_PUBLIC_VERSION_BASE`
+   - **Status:** ✅ Implemented
+   - **Description:** Get version information for a specific service
+   - **Parameters:** `serviceName` - Name of the service to query
+   - **Returns:** `VersionInfo` object for the specified service
 
 ---
 
@@ -459,12 +469,12 @@ All gateway-service API configuration is centralized in this file. All API servi
 
 ### Implementation Status:
 
-- ✅ **Fully Implemented:** 35+ functions
+- ✅ **Fully Implemented:** 37+ functions
   - Auth API: 14 functions (all implemented)
   - Credentials Management: 6 functions (all implemented)
   - Customer Management: 5 functions (all implemented)
   - Provider/Vendor Management: 5 functions (all implemented)
-  - Version API: 1 function (implemented)
+  - Version API: 2 functions (all implemented)
 - ⚠️ **Partially Implemented / TODO:** 20+ functions
   - ECS Server Creation: 1 function (placeholder - needs credential_id integration)
   - ECS Server Management: 4 functions
@@ -474,7 +484,7 @@ All gateway-service API configuration is centralized in this file. All API servi
   - Compute: 2 functions
   - Dashboard: 1 function
 
-### Recent Updates (Credentials Management Integration):
+### Recent Updates (Credentials Management Integration - Phase 2):
 
 1. **Backend (project-service):**
    - ✅ Added version API endpoint (`GET /version`)
@@ -482,7 +492,7 @@ All gateway-service API configuration is centralized in this file. All API servi
    - ✅ Credential update supports updating access_key and secret_key
    - ✅ Credential DAO updated to support access_key and vault_path updates
 
-2. **Frontend (Dashboard):**
+2. **Frontend (Dashboard) - Initial Integration:**
    - ✅ Created `credentialsApi.ts` service for credential management
    - ✅ Created `customersApi.ts` service for customer management
    - ✅ Created `vendorsApi.ts` service for vendor/provider management
@@ -492,6 +502,24 @@ All gateway-service API configuration is centralized in this file. All API servi
    - ✅ Updated BasicInfo type to include `customer_id`, `vendor_id`, and `credential_id`
    - ✅ Made all ECS form sections more compact (reduced padding, smaller headers)
    - ✅ Integrated credential selection into ECS creation flow
+
+3. **Frontend (Dashboard) - UI/UX Improvements (Latest Update):**
+   - ✅ **Customer and Provider side by side**: Customer is displayed on the left, Provider on the right in a grid layout
+   - ✅ **Removed Credential selector**: Credential is automatically determined from customer and provider selection (no manual selection needed)
+   - ✅ **Automatic credential selection**: When both customer and provider are selected, the system automatically fetches and sets the credential (AK/SK) for that combination
+   - ✅ **Credential display**: Shows selected credential info with masked access key (first 4 characters only) when customer and provider are selected
+   - ✅ **Made all ECS form sections more compact**:
+     - Reduced section padding from `p-5`/`p-6` to `p-4`
+     - Reduced header padding from `px-6 py-3.5` to `px-4 py-2.5`
+     - Reduced header font size from `text-lg` to `text-base`
+     - Reduced header icon size from `w-7 h-7` to `w-6 h-6`
+     - Reduced section spacing from `gap-6`/`space-y-6` to `gap-3`/`space-y-3`
+     - Reduced border radius from `rounded-xl`/`rounded-2xl` to `rounded-lg`
+     - Reduced shadow from `shadow-lg`/`shadow-xl` to `shadow-md`
+     - Reduced alert padding and font sizes for more compact display
+   - ✅ **Created version API service**: `src/services/versionApi.ts` for software iteration tracking
+   - ✅ **Updated next.config.js**: Added `NEXT_PUBLIC_VERSION_BASE` route configuration
+   - ✅ **Maintained existing functionality**: All existing features continue to work without modification
 
 ### Key Points:
 
