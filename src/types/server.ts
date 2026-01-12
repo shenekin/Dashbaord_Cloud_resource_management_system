@@ -6,6 +6,9 @@ export interface BasicInfo {
   name: string;
   count: number;
   dryRun: boolean;
+  customer_id?: number;
+  vendor_id?: number;
+  credential_id?: number;
 }
 
 export interface ComputeInfo {

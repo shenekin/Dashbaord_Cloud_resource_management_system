@@ -49,23 +49,40 @@ class ApiClient {
   }
 
   async get<T = any>(url: string, params?: any): Promise<T> {
-    const response = await this.client.get<ApiResponse<T>>(url, { params });
-    return response.data.data;
+    const response = await this.client.get<ApiResponse<T> | T>(url, { params });
+    // Handle both wrapped (ApiResponse) and direct response formats
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      return (response.data as ApiResponse<T>).data;
+    }
+    // If response is direct (not wrapped), return it directly
+    return response.data as T;
   }
 
   async post<T = any>(url: string, data?: any): Promise<T> {
-    const response = await this.client.post<ApiResponse<T>>(url, data);
-    return response.data.data;
+    const response = await this.client.post<ApiResponse<T> | T>(url, data);
+    // Handle both wrapped (ApiResponse) and direct response formats
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      return (response.data as ApiResponse<T>).data;
+    }
+    return response.data as T;
   }
 
   async put<T = any>(url: string, data?: any): Promise<T> {
-    const response = await this.client.put<ApiResponse<T>>(url, data);
-    return response.data.data;
+    const response = await this.client.put<ApiResponse<T> | T>(url, data);
+    // Handle both wrapped (ApiResponse) and direct response formats
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      return (response.data as ApiResponse<T>).data;
+    }
+    return response.data as T;
   }
 
   async delete<T = any>(url: string): Promise<T> {
-    const response = await this.client.delete<ApiResponse<T>>(url);
-    return response.data.data;
+    const response = await this.client.delete<ApiResponse<T> | T>(url);
+    // Handle both wrapped (ApiResponse) and direct response formats
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      return (response.data as ApiResponse<T>).data;
+    }
+    return response.data as T;
   }
 }
 

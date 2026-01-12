@@ -85,7 +85,7 @@ export default function ECSServerForm() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Basic Information Section */}
       <div id="step-basic" className={!isSectionEnabled('basic') ? 'opacity-50 pointer-events-none' : ''}>
         <BasicInfoSection

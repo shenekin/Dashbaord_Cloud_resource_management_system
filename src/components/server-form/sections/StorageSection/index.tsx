@@ -35,17 +35,17 @@ export default function StorageSection({
   const isDisabled = disabled || !region || !availabilityZone;
 
   return (
-    <div className={`bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden ${isDisabled ? 'opacity-50' : ''}`}>
-      <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 px-8 py-5">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">3</span>
+    <div className={`bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 overflow-hidden ${isDisabled ? 'opacity-50' : ''}`}>
+      <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 py-3.5">
+        <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <div className="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">3</span>
           </div>
           Storage Configuration
         </h2>
-        <p className="text-indigo-100 text-sm mt-1.5">Configure system disk and optional data disks</p>
+        <p className="text-indigo-100 text-xs mt-1">Configure system disk and optional data disks</p>
       </div>
-      <div className="p-8">
+      <div className="p-5">
         {isDisabled && (
           <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
             <p className="text-sm text-amber-800 font-medium flex items-center gap-2">

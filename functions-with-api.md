@@ -148,6 +148,8 @@ All gateway-service API configuration is centralized in this file. All API servi
    - **Current Implementation:** Placeholder with setTimeout
    - **Required:** Replace with actual API call to gateway-service
    - **Data Mapping:** Uses `serverFormToApi(formData)` from `src/mappers/serverFormToApi.ts`
+   - **New Fields:** Form now includes `customer_id`, `vendor_id`, and `credential_id` in BasicInfo section
+   - **Credential Integration:** ECS creation requires credential selection from Credentials Management
 
 ---
 
@@ -188,120 +190,131 @@ All gateway-service API configuration is centralized in this file. All API servi
 
 ## 5. Credentials Management Functions
 
-**File:** `src/app/credentials/page.tsx` (to be created: `src/services/credentialsApi.ts`)
+**File:** `src/services/credentialsApi.ts`
 
 **Base URL:** Uses `NEXT_PUBLIC_API_BASE_URL` from `next.config.js`
 
 ### Functions:
 
-1. **`getCredentials(filters?)`**
+1. **`credentialsApi.getCredentials(filters?)`**
    - **Endpoint:** `GET /api/v1/credentials`
    - **Route Config:** `NEXT_PUBLIC_CREDENTIALS_BASE`
-   - **Status:** ⚠️ TODO - Currently uses localStorage
-   - **Description:** Get all credentials (with optional customer/provider filters)
-   - **Required:** Replace localStorage with API call
+   - **Status:** ✅ Implemented
+   - **Description:** Get all credentials (with optional customer_id, project_id filters)
+   - **Response:** Paginated list with masked access_key (only first 4 characters visible)
+   - **Security:** Access keys are masked on backend - only first 4 characters shown
 
-2. **`getCredential(id)`**
+2. **`credentialsApi.getCredential(id)`**
    - **Endpoint:** `GET /api/v1/credentials/{credential_id}`
    - **Route Config:** `NEXT_PUBLIC_CREDENTIALS_BY_ID`
-   - **Status:** ⚠️ TODO - Not implemented
-   - **Description:** Get credential by ID
+   - **Status:** ✅ Implemented
+   - **Description:** Get credential by ID (access_key is masked)
 
-3. **`createCredential(data)`**
+3. **`credentialsApi.getCredentialContext(id)`**
+   - **Endpoint:** `GET /api/v1/credentials/context/{credential_id}`
+   - **Route Config:** `NEXT_PUBLIC_CREDENTIALS_BASE`
+   - **Status:** ✅ Implemented
+   - **Description:** Get credential context for internal services (includes full access_key and vault_path)
+   - **Note:** For backend/internal use only
+
+4. **`credentialsApi.createCredential(data)`**
    - **Endpoint:** `POST /api/v1/credentials`
    - **Route Config:** `NEXT_PUBLIC_CREDENTIALS_BASE`
-   - **Status:** ⚠️ TODO - Currently uses local state
-   - **Description:** Create new credential
-   - **Required:** Replace local state handler with API call
+   - **Status:** ✅ Implemented
+   - **Description:** Create new credential (AK/SK stored securely - SK in Vault, AK in MySQL)
 
-4. **`updateCredential(id, data)`**
+5. **`credentialsApi.updateCredential(id, data)`**
    - **Endpoint:** `PUT /api/v1/credentials/{credential_id}`
    - **Route Config:** `NEXT_PUBLIC_CREDENTIALS_BY_ID`
-   - **Status:** ⚠️ TODO - Not implemented
-   - **Description:** Update existing credential
+   - **Status:** ✅ Implemented
+   - **Description:** Update existing credential (supports updating access_key and secret_key)
+   - **Features:** Can update AK/SK, resource_user, labels, and status
 
-5. **`deleteCredential(id)`**
+6. **`credentialsApi.deleteCredential(id)`**
    - **Endpoint:** `DELETE /api/v1/credentials/{credential_id}`
    - **Route Config:** `NEXT_PUBLIC_CREDENTIALS_BY_ID`
-   - **Status:** ⚠️ TODO - Currently uses local state
-   - **Description:** Delete credential
-   - **Required:** Replace local state handler with API call
+   - **Status:** ✅ Implemented
+   - **Description:** Delete credential (soft delete - sets status to 'deleted')
 
 ---
 
 ## 6. Customer Management Functions
 
-**File:** `src/components/credentials/CustomerSelector.tsx` (to be created: `src/services/credentialsApi.ts`)
+**File:** `src/services/customersApi.ts`
 
 **Base URL:** Uses `NEXT_PUBLIC_API_BASE_URL` from `next.config.js`
 
 ### Functions:
 
-1. **`getCustomers()`**
+1. **`customersApi.getCustomers()`**
    - **Endpoint:** `GET /api/v1/customers`
    - **Route Config:** `NEXT_PUBLIC_CUSTOMERS_BASE`
-   - **Status:** ⚠️ TODO - Currently uses localStorage
+   - **Status:** ✅ Implemented
    - **Description:** Get list of all customers
-   - **Required:** Replace localStorage with API call
 
-2. **`createCustomer(name)`**
+2. **`customersApi.getCustomer(id)`**
+   - **Endpoint:** `GET /api/v1/customers/{customer_id}`
+   - **Route Config:** `NEXT_PUBLIC_CUSTOMERS_BY_ID`
+   - **Status:** ✅ Implemented
+   - **Description:** Get customer by ID
+
+3. **`customersApi.createCustomer(data)`**
    - **Endpoint:** `POST /api/v1/customers`
    - **Route Config:** `NEXT_PUBLIC_CUSTOMERS_BASE`
-   - **Status:** ⚠️ TODO - Currently uses localStorage
+   - **Status:** ✅ Implemented
    - **Description:** Create new customer
-   - **Required:** Replace localStorage with API call
 
-3. **`updateCustomer(id, name)`**
+4. **`customersApi.updateCustomer(id, data)`**
    - **Endpoint:** `PUT /api/v1/customers/{customer_id}`
    - **Route Config:** `NEXT_PUBLIC_CUSTOMERS_BY_ID`
-   - **Status:** ⚠️ TODO - Currently uses localStorage
-   - **Description:** Update customer name
-   - **Required:** Replace localStorage with API call
+   - **Status:** ✅ Implemented
+   - **Description:** Update customer information
 
-4. **`deleteCustomer(id)`**
+5. **`customersApi.deleteCustomer(id)`**
    - **Endpoint:** `DELETE /api/v1/customers/{customer_id}`
    - **Route Config:** `NEXT_PUBLIC_CUSTOMERS_BY_ID`
-   - **Status:** ⚠️ TODO - Currently uses localStorage
+   - **Status:** ✅ Implemented
    - **Description:** Delete customer
-   - **Required:** Replace localStorage with API call
 
 ---
 
-## 7. Provider Management Functions
+## 7. Provider/Vendor Management Functions
 
-**File:** `src/components/credentials/ProviderSelector.tsx` (to be created: `src/services/credentialsApi.ts`)
+**File:** `src/services/vendorsApi.ts`
 
 **Base URL:** Uses `NEXT_PUBLIC_API_BASE_URL` from `next.config.js`
 
 ### Functions:
 
-1. **`getProviders()`**
+1. **`vendorsApi.getVendors()`**
    - **Endpoint:** `GET /api/v1/vendors`
    - **Route Config:** `NEXT_PUBLIC_VENDORS_BASE`
-   - **Status:** ⚠️ TODO - Currently uses localStorage
+   - **Status:** ✅ Implemented
    - **Description:** Get list of all cloud providers/vendors
-   - **Required:** Replace localStorage with API call
 
-2. **`createProvider(name)`**
-   - **Endpoint:** `POST /api/v1/vendors` (or `/api/v1/providers` if exists)
+2. **`vendorsApi.getVendor(id)`**
+   - **Endpoint:** `GET /api/v1/vendors/{vendor_id}`
+   - **Route Config:** `NEXT_PUBLIC_VENDORS_BY_ID`
+   - **Status:** ✅ Implemented
+   - **Description:** Get vendor by ID
+
+3. **`vendorsApi.createVendor(data)`**
+   - **Endpoint:** `POST /api/v1/vendors`
    - **Route Config:** `NEXT_PUBLIC_VENDORS_BASE`
-   - **Status:** ⚠️ TODO - Currently uses localStorage
-   - **Description:** Create new provider
-   - **Required:** Replace localStorage with API call
+   - **Status:** ✅ Implemented
+   - **Description:** Create new vendor/provider
 
-3. **`updateProvider(id, name)`**
+4. **`vendorsApi.updateVendor(id, data)`**
    - **Endpoint:** `PUT /api/v1/vendors/{vendor_id}`
    - **Route Config:** `NEXT_PUBLIC_VENDORS_BY_ID`
-   - **Status:** ⚠️ TODO - Currently uses localStorage
-   - **Description:** Update provider name
-   - **Required:** Replace localStorage with API call
+   - **Status:** ✅ Implemented
+   - **Description:** Update vendor information
 
-4. **`deleteProvider(id)`**
+5. **`vendorsApi.deleteVendor(id)`**
    - **Endpoint:** `DELETE /api/v1/vendors/{vendor_id}`
    - **Route Config:** `NEXT_PUBLIC_VENDORS_BY_ID`
-   - **Status:** ⚠️ TODO - Currently uses localStorage
-   - **Description:** Delete provider
-   - **Required:** Replace localStorage with API call
+   - **Status:** ✅ Implemented
+   - **Description:** Delete vendor/provider
 
 ---
 
@@ -425,22 +438,60 @@ All gateway-service API configuration is centralized in this file. All API servi
 
 ---
 
+## 13. Version API Functions
+
+**File:** `project-service/app/main.py`
+
+**Base URL:** Uses `NEXT_PUBLIC_API_BASE_URL` from `next.config.js`
+
+### Functions:
+
+1. **`GET /version`**
+   - **Endpoint:** `GET /version`
+   - **Status:** ✅ Implemented
+   - **Description:** Get service version information for software iteration tracking
+   - **Response:** Service name, version, API version, build date, and description
+   - **Purpose:** Enable version tracking and software iteration management
+
+---
+
 ## Summary Statistics
 
 ### Implementation Status:
 
-- ✅ **Fully Implemented:** 14 functions (Auth API - all functions)
-- ⚠️ **Partially Implemented / TODO:** 35+ functions
-  - ECS Server Creation: 1 function (placeholder)
+- ✅ **Fully Implemented:** 35+ functions
+  - Auth API: 14 functions (all implemented)
+  - Credentials Management: 6 functions (all implemented)
+  - Customer Management: 5 functions (all implemented)
+  - Provider/Vendor Management: 5 functions (all implemented)
+  - Version API: 1 function (implemented)
+- ⚠️ **Partially Implemented / TODO:** 20+ functions
+  - ECS Server Creation: 1 function (placeholder - needs credential_id integration)
   - ECS Server Management: 4 functions
-  - Credentials Management: 5 functions
-  - Customer Management: 4 functions
-  - Provider Management: 4 functions
   - Project Management: 3 functions
   - Region/AZ: 2 functions
   - Network: 2 functions
   - Compute: 2 functions
   - Dashboard: 1 function
+
+### Recent Updates (Credentials Management Integration):
+
+1. **Backend (project-service):**
+   - ✅ Added version API endpoint (`GET /version`)
+   - ✅ Credential list response now masks access_key (shows only first 4 characters)
+   - ✅ Credential update supports updating access_key and secret_key
+   - ✅ Credential DAO updated to support access_key and vault_path updates
+
+2. **Frontend (Dashboard):**
+   - ✅ Created `credentialsApi.ts` service for credential management
+   - ✅ Created `customersApi.ts` service for customer management
+   - ✅ Created `vendorsApi.ts` service for vendor/provider management
+   - ✅ Updated `CredentialList` component to show only first 4 characters of AK
+   - ✅ Added customer and provider tabs to BasicInfoSection
+   - ✅ Added CredentialSelector component to BasicInfoSection
+   - ✅ Updated BasicInfo type to include `customer_id`, `vendor_id`, and `credential_id`
+   - ✅ Made all ECS form sections more compact (reduced padding, smaller headers)
+   - ✅ Integrated credential selection into ECS creation flow
 
 ### Key Points:
 

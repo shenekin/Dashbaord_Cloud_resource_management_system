@@ -8,16 +8,20 @@ interface CredentialListProps {
 }
 
 /**
- * Mask a string, showing only first 4 and last 4 characters
+ * Mask access key to show only first 4 characters
+ * Backend already masks the access_key, but this ensures frontend display consistency
  */
-function maskCredential(value: string): string {
-  if (value.length <= 8) {
-    return '*'.repeat(value.length);
+function maskAccessKey(value: string): string {
+  if (!value) return '';
+  // If already masked by backend (contains *), return as is
+  if (value.includes('*')) {
+    return value;
   }
-  const first4 = value.substring(0, 4);
-  const last4 = value.substring(value.length - 4);
-  const masked = '*'.repeat(Math.max(0, value.length - 8));
-  return `${first4}${masked}${last4}`;
+  // Show only first 4 characters, mask the rest
+  if (value.length > 4) {
+    return value.substring(0, 4) + '*'.repeat(value.length - 4);
+  }
+  return '*'.repeat(value.length);
 }
 
 /**
@@ -102,7 +106,7 @@ export default function CredentialList({ credentials, onDelete }: CredentialList
                       </label>
                       <div className="flex items-center gap-2">
                         <code className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono text-gray-800">
-                          {maskCredential(credential.accessKey)}
+                          {maskAccessKey(credential.accessKey)}
                         </code>
                         <button
                           type="button"
@@ -129,7 +133,7 @@ export default function CredentialList({ credentials, onDelete }: CredentialList
                       </label>
                       <div className="flex items-center gap-2">
                         <code className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono text-gray-800">
-                          {maskCredential(credential.secretKey)}
+                          {credential.secretKey ? '****' : 'N/A'}
                         </code>
                         <button
                           type="button"
