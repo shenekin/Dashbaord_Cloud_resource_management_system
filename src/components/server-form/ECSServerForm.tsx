@@ -11,6 +11,9 @@ import IPPublicSection from '@/components/server-form/sections/IPPublicSection';
 import BillingLifecycleSection from '@/components/server-form/sections/BillingLifecycleSection';
 import AdvancedSection from '@/components/server-form/sections/AdvancedSection';
 import ReviewDryRunSection from '@/components/server-form/sections/ReviewDryRunSection';
+import { createLogger } from '@/lib/logger';
+
+const ecsLogger = createLogger('ecs');
 
 /**
  * ECS Server Form Component
@@ -31,8 +34,11 @@ export default function ECSServerForm() {
     touched,
     updateFormData,
     validate,
+    reset,
     resetDownstreamSections,
     isFieldEnabled,
+    getFieldConfig,
+    getFieldValue,
   } = useECSServerForm();
 
   const { loading: submitLoading, error: submitError, submit } = useServerSubmit();
@@ -55,20 +61,93 @@ export default function ECSServerForm() {
   /**
    * Handle review button click
    * Shows review section before submission
+   * Uses actionableErrors to determine if form is valid (only checks enabled required fields)
    */
   const handleReview = () => {
-    if (validate()) {
+    ecsLogger.info('Review button clicked - validating form');
+    
+    // Run validation to update errors
+    validate();
+    
+    // Check actionable errors (only enabled required fields)
+    const hasActionableErrors = Object.keys(actionableErrors).length > 0;
+    
+    if (!hasActionableErrors) {
+      ecsLogger.info('Form validation passed - showing review section', {
+        serverName: formData.basic.name,
+        region: formData.basic.region,
+        availabilityZone: formData.basic.az,
+        instanceType: formData.compute.flavor,
+        image: formData.compute.image,
+      });
       setShowReview(true);
+    } else {
+      ecsLogger.debug('Form validation failed', {
+        errorCount: Object.keys(errors).length,
+        actionableErrors: Object.keys(actionableErrors).length,
+        actionableErrorDetails: Object.keys(actionableErrors).map(key => ({
+          field: key,
+          message: actionableErrors[key],
+        })),
+      });
     }
   };
 
   /**
    * Handle submit from review section
    * Submits the form after user confirms in review
+   * Resets form after successful submission
    */
   const handleSubmit = async () => {
-    if (validate()) {
-      await submit(formData);
+    ecsLogger.info('Submit confirmed from review section');
+    
+    // Run validation to update errors
+    validate();
+    
+    // Check actionable errors (only enabled required fields)
+    const hasActionableErrors = Object.keys(actionableErrors).length > 0;
+    
+    if (!hasActionableErrors) {
+      ecsLogger.info('Final validation passed - submitting form', {
+        serverName: formData.basic.name,
+        instanceCount: formData.basic.count,
+        formDataSummary: {
+          region: formData.basic.region,
+          availabilityZone: formData.basic.az,
+          instanceType: formData.compute.flavor,
+          image: formData.compute.image,
+          systemDisk: formData.storage.systemDisk,
+          network: {
+            vpc: formData.network.vpc,
+            subnet: formData.network.subnet,
+          },
+        },
+      });
+      
+      // Store form data before submission for logging
+      const submittedFormData = { ...formData };
+      
+      const result = await submit(formData);
+      
+      // Reset form only after successful submission
+      if (result?.success) {
+        ecsLogger.info('Form reset after successful submission');
+        reset();
+        setShowReview(false);
+      } else {
+        ecsLogger.debug('Submission failed - form not reset', {
+          error: result?.error || 'Unknown error',
+        });
+      }
+    } else {
+      ecsLogger.debug('Final validation failed - submission blocked', {
+        errorCount: Object.keys(errors).length,
+        actionableErrors: Object.keys(actionableErrors).length,
+        actionableErrorDetails: Object.keys(actionableErrors).map(key => ({
+          field: key,
+          message: actionableErrors[key],
+        })),
+      });
     }
   };
 
@@ -110,14 +189,18 @@ export default function ECSServerForm() {
   };
 
   /**
-   * Filter errors to only show actionable validation errors.
-   * An error is actionable if:
-   * 1. The section containing the field is enabled (dependencies met)
-   * 2. AND the field is enabled (not disabled, dependencies met)
-   * 3. OR the field has been touched by the user
+   * Filter errors to only show actionable validation errors that block submission.
+   * An error blocks submission if:
+   * 1. The field is required (according to schema)
+   * 2. AND the section containing the field is enabled (dependencies met)
+   * 3. AND the field is enabled (not disabled, dependencies met)
+   * 4. OR the field has been touched by the user (show feedback even if optional)
    * 
-   * This prevents showing errors for disabled fields that the user
-   * cannot yet interact with.
+   * This prevents showing errors for:
+   * - Disabled fields that the user cannot yet interact with
+   * - Optional fields that shouldn't block submission
+   * 
+   * Note: Handles field name mapping between schema (availabilityZone) and form data (az).
    * 
    * Memoized to avoid recalculating on every render.
    */
@@ -127,12 +210,44 @@ export default function ECSServerForm() {
     Object.keys(errors).forEach(errorPath => {
       const pathParts = errorPath.split('.');
       const section = pathParts[0];
-      const fieldName = pathParts[1];
+      const schemaFieldName = pathParts[1];
       
       // Skip if we can't parse the path
-      if (!section || !fieldName) {
+      if (!section || !schemaFieldName) {
         return;
       }
+      
+      // Handle nested field paths (e.g., "storage.systemDisk.type")
+      const isNestedPath = pathParts.length > 2;
+      let isRequired = false;
+      let parentFieldEnabled = true;
+      
+      if (isNestedPath) {
+        // For nested paths like "storage.systemDisk.type":
+        // - Check if parent object field (systemDisk) is required and enabled
+        // - Nested properties of required parent objects are treated as required
+        // - Known required nested fields: systemDisk.type, systemDisk.size
+        const parentFieldConfig = getFieldConfig(section, schemaFieldName);
+        const parentRequired = parentFieldConfig?.required ?? false;
+        
+        // Check if this is a known required nested property
+        // According to schema: systemDisk has required properties (type, size)
+        const nestedFieldName = pathParts[2];
+        const isKnownRequiredNested = 
+          schemaFieldName === 'systemDisk' && (nestedFieldName === 'type' || nestedFieldName === 'size');
+        
+        isRequired = parentRequired && isKnownRequiredNested;
+        // For nested fields, check if parent object field is enabled
+        parentFieldEnabled = isFieldEnabled(section, schemaFieldName);
+      } else {
+        // For simple paths like "basic.region", "network.vpc", "network.subnet":
+        const fieldConfig = getFieldConfig(section, schemaFieldName);
+        isRequired = fieldConfig?.required ?? false;
+      }
+      
+      // Map schema field names to form data field names
+      // Schema uses "availabilityZone" but form data uses "az"
+      const formDataFieldName = schemaFieldName === 'availabilityZone' ? 'az' : schemaFieldName;
       
       // Check if section is enabled (inline check to avoid dependency issues)
       let sectionEnabled = false;
@@ -147,21 +262,42 @@ export default function ECSServerForm() {
       }
       
       // Check if field is enabled (only if section is enabled)
-      const fieldEnabled = sectionEnabled && isFieldEnabled(section, fieldName);
+      // For nested fields, we already checked parentFieldEnabled above
+      // For simple fields, check if the field itself is enabled
+      const fieldEnabled = isNestedPath 
+        ? (sectionEnabled && parentFieldEnabled)
+        : (sectionEnabled && isFieldEnabled(section, schemaFieldName));
       
-      // Check if field has been touched
-      const fieldTouched = touched[errorPath] || false;
+      // Verify the field actually has an invalid value
+      // This handles cases where errors might persist even after fields are filled
+      // (e.g., when nested fields are updated but validation hasn't run yet)
+      let fieldValue: any;
+      if (isNestedPath) {
+        // For nested paths like "storage.systemDisk.type", get value from nested path
+        const nestedPath = `${section}.${schemaFieldName}.${pathParts[2]}`;
+        fieldValue = getFieldValue(nestedPath);
+      } else {
+        // For simple paths, use the error path directly
+        const formDataPath = `${section}.${formDataFieldName}`;
+        fieldValue = getFieldValue(formDataPath);
+      }
       
-      // Only include error if:
-      // - Section is enabled AND field is enabled (user can interact)
-      // - OR field has been touched (user has interacted, show feedback)
-      if ((sectionEnabled && fieldEnabled) || fieldTouched) {
+      // Check if field has invalid value (empty, null, undefined, or empty object/array)
+      const hasInvalidValue = fieldValue === undefined || fieldValue === null || fieldValue === '' || 
+        (typeof fieldValue === 'object' && !Array.isArray(fieldValue) && Object.keys(fieldValue).length === 0) ||
+        (Array.isArray(fieldValue) && fieldValue.length === 0);
+      
+      // Only include error if it blocks submission:
+      // - Field is required AND section is enabled AND field is enabled AND field has invalid value
+      // This ensures only required fields with actual invalid values block submission.
+      // Optional fields can have validation errors shown inline but won't block the button.
+      if (isRequired && sectionEnabled && fieldEnabled && hasInvalidValue) {
         filtered[errorPath] = errors[errorPath];
       }
     });
     
     return filtered;
-  }, [errors, touched, formData.basic.region, formData.basic.az, formData.network.vpc, formData.network.subnet, isFieldEnabled]);
+  }, [errors, formData, formData.basic.region, formData.basic.az, formData.network.vpc, formData.network.subnet, isFieldEnabled, getFieldConfig, getFieldValue]);
 
   return (
     <div className="space-y-3">
@@ -276,8 +412,8 @@ export default function ECSServerForm() {
                 </div>
               )}
               {Object.keys(actionableErrors).length > 0 && (
-                <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                  <p className="text-sm text-amber-800 font-medium">
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+                  <p className="text-sm text-red-800 font-medium">
                     Please fix validation errors before submitting
                   </p>
                 </div>

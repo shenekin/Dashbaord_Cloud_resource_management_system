@@ -1,0 +1,389 @@
+[2026-01-13T14:25:07.295Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 3,
+  "actionableErrors": 0
+}
+[2026-01-13T14:25:07.295Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:25:22.318Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:25:22.318Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:25:23.167Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:25:23.167Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:25:23.793Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:25:23.793Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:26:58.952Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:26:58.953Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:26:59.624Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:26:59.624Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:26:59.839Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:26:59.840Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:00.070Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:00.071Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:00.324Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:00.324Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:00.850Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:00.851Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:01.350Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:01.351Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:01.860Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:01.860Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:02.290Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:02.290Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:02.505Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:02.506Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:02.711Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:02.711Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:03.508Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:03.509Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:03.736Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:03.736Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:03.974Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:03.975Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:04.213Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:04.213Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:27:20.592Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:27:20.592Z] [DEBUG] [ecs] Form validation failed | Data: {
+  "errorCount": 1,
+  "actionableErrors": 0
+}
+[2026-01-13T14:33:21.793Z] [INFO] [ecs] Form validation passed - showing review section | Data: {
+  "serverName": "ecs-20260113143259-la44",
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az1",
+  "instanceType": "s6.medium.1",
+  "image": "centos-7.9"
+}
+[2026-01-13T14:33:21.793Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:33:38.374Z] [DEBUG] [ecs] Form data mapped to API format | Data: {
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az1",
+  "instanceType": "s6.medium.1",
+  "image": "centos-7.9",
+  "systemDisk": "***MASKED***",
+  "network": {
+    "vpcId": "vpc-002",
+    "subnetId": "vpc-002-subnet-2"
+  }
+}
+[2026-01-13T14:33:38.370Z] [INFO] [ecs] Submit confirmed from review section
+[2026-01-13T14:33:38.374Z] [INFO] [ecs] Credentials retrieved successfully | Data: {
+  "customer": "Ekin",
+  "provider": "Huawei",
+  "credentialId": "cred-1768309878638"
+}
+[2026-01-13T14:33:38.373Z] [DEBUG] [ecs] Retrieving credentials from local storage | Data: {
+  "credentialId": "cred-1768309878638"
+}
+[2026-01-13T14:33:38.373Z] [INFO] [ecs] ECS server creation started | Data: {
+  "serverName": "ecs-20260113143259-la44",
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az1",
+  "instanceCount": 1
+}
+[2026-01-13T14:33:38.372Z] [INFO] [ecs] Final validation passed - submitting form | Data: {
+  "serverName": "ecs-20260113143259-la44",
+  "instanceCount": 1,
+  "formDataSummary": {
+    "region": "cn-north-1",
+    "availabilityZone": "cn-north-1-az1",
+    "instanceType": "s6.medium.1",
+    "image": "centos-7.9",
+    "systemDisk": "***MASKED***",
+    "network": {
+      "vpc": "vpc-002",
+      "subnet": "vpc-002-subnet-2"
+    }
+  }
+}
+[2026-01-13T14:33:38.375Z] [INFO] [ecs] Sending API request to create server | Data: {
+  "endpoint": "/ecs",
+  "serverName": "ecs-20260113143259-la44",
+  "instanceCount": 1
+}
+[2026-01-13T14:33:38.392Z] [DEBUG] [ecs] ECS server creation failed | Data: {
+  "error": "Network Error",
+  "endpoint": "/ecs"
+}
+[2026-01-13T14:33:38.392Z] [DEBUG] [ecs] Submission failed - form not reset | Data: {
+  "error": "Network Error"
+}
+[2026-01-13T14:34:45.379Z] [INFO] [ecs] Form validation passed - showing review section | Data: {
+  "serverName": "ecs-20260113143426-lh7x",
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az1",
+  "instanceType": "s6.medium.1",
+  "image": "ubuntu-20.04"
+}
+[2026-01-13T14:34:45.379Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:34:57.143Z] [INFO] [ecs] Submit confirmed from review section
+[2026-01-13T14:34:57.144Z] [INFO] [ecs] Final validation passed - submitting form | Data: {
+  "serverName": "ecs-20260113143426-lh7x",
+  "instanceCount": 1,
+  "formDataSummary": {
+    "region": "cn-north-1",
+    "availabilityZone": "cn-north-1-az1",
+    "instanceType": "s6.medium.1",
+    "image": "ubuntu-20.04",
+    "systemDisk": "***MASKED***",
+    "network": {
+      "vpc": "vpc-001",
+      "subnet": "vpc-001-subnet-1"
+    }
+  }
+}
+[2026-01-13T14:34:57.144Z] [INFO] [ecs] ECS server creation started | Data: {
+  "serverName": "ecs-20260113143426-lh7x",
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az1",
+  "instanceCount": 1
+}
+[2026-01-13T14:34:57.144Z] [DEBUG] [ecs] Retrieving credentials from local storage | Data: {
+  "credentialId": "cred-1768309878638"
+}
+[2026-01-13T14:34:57.144Z] [INFO] [ecs] Credentials retrieved successfully | Data: {
+  "customer": "Ekin",
+  "provider": "Huawei",
+  "credentialId": "cred-1768309878638"
+}
+[2026-01-13T14:34:57.145Z] [DEBUG] [ecs] Form data mapped to API format | Data: {
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az1",
+  "instanceType": "s6.medium.1",
+  "image": "ubuntu-20.04",
+  "systemDisk": "***MASKED***",
+  "network": {
+    "vpcId": "vpc-001",
+    "subnetId": "vpc-001-subnet-1"
+  }
+}
+[2026-01-13T14:34:57.145Z] [INFO] [ecs] Sending API request to create server | Data: {
+  "endpoint": "/ecs",
+  "serverName": "ecs-20260113143426-lh7x",
+  "instanceCount": 1
+}
+[2026-01-13T14:34:57.152Z] [DEBUG] [ecs] ECS server creation failed | Data: {
+  "error": "Network Error",
+  "endpoint": "/ecs"
+}
+[2026-01-13T14:34:57.152Z] [DEBUG] [ecs] Submission failed - form not reset | Data: {
+  "error": "Network Error"
+}
+[2026-01-13T14:36:10.880Z] [INFO] [ecs] ECS server creation started | Data: {
+  "serverName": "ecs-20260113143426-lh7x",
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az1",
+  "instanceCount": 1
+}
+[2026-01-13T14:36:10.878Z] [INFO] [ecs] Submit confirmed from review section
+[2026-01-13T14:36:10.880Z] [DEBUG] [ecs] Retrieving credentials from local storage | Data: {
+  "credentialId": "cred-1768309878638"
+}
+[2026-01-13T14:36:10.879Z] [INFO] [ecs] Final validation passed - submitting form | Data: {
+  "serverName": "ecs-20260113143426-lh7x",
+  "instanceCount": 1,
+  "formDataSummary": {
+    "region": "cn-north-1",
+    "availabilityZone": "cn-north-1-az1",
+    "instanceType": "s6.medium.1",
+    "image": "ubuntu-20.04",
+    "systemDisk": "***MASKED***",
+    "network": {
+      "vpc": "vpc-001",
+      "subnet": "vpc-001-subnet-1"
+    }
+  }
+}
+[2026-01-13T14:36:10.889Z] [INFO] [ecs] Credentials retrieved successfully | Data: {
+  "customer": "Ekin",
+  "provider": "Huawei",
+  "credentialId": "cred-1768309878638"
+}
+[2026-01-13T14:36:10.889Z] [DEBUG] [ecs] Form data mapped to API format | Data: {
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az1",
+  "instanceType": "s6.medium.1",
+  "image": "ubuntu-20.04",
+  "systemDisk": "***MASKED***",
+  "network": {
+    "vpcId": "vpc-001",
+    "subnetId": "vpc-001-subnet-1"
+  }
+}
+[2026-01-13T14:36:10.890Z] [INFO] [ecs] Sending API request to create server | Data: {
+  "endpoint": "/ecs",
+  "serverName": "ecs-20260113143426-lh7x",
+  "instanceCount": 1
+}
+[2026-01-13T14:36:10.942Z] [DEBUG] [ecs] ECS server creation failed | Data: {
+  "error": "Network Error",
+  "endpoint": "/ecs"
+}
+[2026-01-13T14:36:10.943Z] [DEBUG] [ecs] Submission failed - form not reset | Data: {
+  "error": "Network Error"
+}
+[2026-01-13T14:39:40.891Z] [INFO] [ecs] Form validation passed - showing review section | Data: {
+  "serverName": "ecs-20260113143910-0q2l",
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az3",
+  "instanceType": "s6.small.1",
+  "image": "centos-7.9"
+}
+[2026-01-13T14:39:40.890Z] [INFO] [ecs] Review button clicked - validating form
+[2026-01-13T14:40:11.977Z] [INFO] [ecs] Submit confirmed from review section
+[2026-01-13T14:40:11.977Z] [INFO] [ecs] Final validation passed - submitting form | Data: {
+  "serverName": "ecs-20260113143910-0q2l",
+  "instanceCount": 1,
+  "formDataSummary": {
+    "region": "cn-north-1",
+    "availabilityZone": "cn-north-1-az3",
+    "instanceType": "s6.small.1",
+    "image": "centos-7.9",
+    "systemDisk": "***MASKED***",
+    "network": {
+      "vpc": "vpc-001",
+      "subnet": "vpc-001-subnet-2"
+    }
+  }
+}
+[2026-01-13T14:40:11.978Z] [INFO] [ecs] ECS server creation started | Data: {
+  "serverName": "ecs-20260113143910-0q2l",
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az3",
+  "instanceCount": 1
+}
+[2026-01-13T14:40:11.978Z] [DEBUG] [ecs] Retrieving credentials from local storage | Data: {
+  "credentialId": "cred-1768309878638"
+}
+[2026-01-13T14:40:11.978Z] [INFO] [ecs] Credentials retrieved successfully | Data: {
+  "customer": "Ekin",
+  "provider": "Huawei",
+  "credentialId": "cred-1768309878638"
+}
+[2026-01-13T14:40:11.979Z] [DEBUG] [ecs] Form data mapped to API format | Data: {
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az3",
+  "instanceType": "s6.small.1",
+  "image": "centos-7.9",
+  "systemDisk": "***MASKED***",
+  "network": {
+    "vpcId": "vpc-001",
+    "subnetId": "vpc-001-subnet-2"
+  }
+}
+[2026-01-13T14:40:11.979Z] [INFO] [ecs] Sending API request to create server | Data: {
+  "endpoint": "/ecs",
+  "serverName": "ecs-20260113143910-0q2l",
+  "instanceCount": 1
+}
+[2026-01-13T14:40:11.992Z] [DEBUG] [ecs] ECS server creation failed | Data: {
+  "error": "Network Error",
+  "endpoint": "/ecs"
+}
+[2026-01-13T14:40:11.993Z] [DEBUG] [ecs] Submission failed - form not reset | Data: {
+  "error": "Network Error"
+}
+[2026-01-13T14:40:25.603Z] [INFO] [ecs] Submit confirmed from review section
+[2026-01-13T14:40:25.603Z] [INFO] [ecs] Final validation passed - submitting form | Data: {
+  "serverName": "ecs-20260113143910-0q2l",
+  "instanceCount": 1,
+  "formDataSummary": {
+    "region": "cn-north-1",
+    "availabilityZone": "cn-north-1-az3",
+    "instanceType": "s6.small.1",
+    "image": "centos-7.9",
+    "systemDisk": "***MASKED***",
+    "network": {
+      "vpc": "vpc-001",
+      "subnet": "vpc-001-subnet-2"
+    }
+  }
+}
+[2026-01-13T14:40:25.604Z] [INFO] [ecs] ECS server creation started | Data: {
+  "serverName": "ecs-20260113143910-0q2l",
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az3",
+  "instanceCount": 1
+}
+[2026-01-13T14:40:25.604Z] [DEBUG] [ecs] Retrieving credentials from local storage | Data: {
+  "credentialId": "cred-1768309878638"
+}
+[2026-01-13T14:40:25.604Z] [INFO] [ecs] Credentials retrieved successfully | Data: {
+  "customer": "Ekin",
+  "provider": "Huawei",
+  "credentialId": "cred-1768309878638"
+}
+[2026-01-13T14:40:25.604Z] [DEBUG] [ecs] Form data mapped to API format | Data: {
+  "region": "cn-north-1",
+  "availabilityZone": "cn-north-1-az3",
+  "instanceType": "s6.small.1",
+  "image": "centos-7.9",
+  "systemDisk": "***MASKED***",
+  "network": {
+    "vpcId": "vpc-001",
+    "subnetId": "vpc-001-subnet-2"
+  }
+}
+[2026-01-13T14:40:25.604Z] [INFO] [ecs] Sending API request to create server | Data: {
+  "endpoint": "/ecs",
+  "serverName": "ecs-20260113143910-0q2l",
+  "instanceCount": 1
+}
+[2026-01-13T14:40:25.612Z] [DEBUG] [ecs] ECS server creation failed | Data: {
+  "error": "Network Error",
+  "endpoint": "/ecs"
+}
+[2026-01-13T14:40:25.613Z] [DEBUG] [ecs] Submission failed - form not reset | Data: {
+  "error": "Network Error"
+}
