@@ -31,6 +31,10 @@ export interface ServerApiRequest {
     key: string;
     value: string;
   }>;
+  access_key?: string;
+  secret_key?: string;
+  customer?: string;
+  provider?: string;
 }
 
 /**

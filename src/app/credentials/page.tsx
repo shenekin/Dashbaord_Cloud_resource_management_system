@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import Footer from '@/components/layout/Footer';
 import { useUIStore } from '@/store/useUIStore';
-import { cn } from '@/lib/utils';
+import { cn, saveCredentialToLocalStorage, getCredentialsFromLocalStorage, deleteCredentialFromLocalStorage, LocalCredential } from '@/lib/utils';
 import CustomerSelector from '@/components/credentials/CustomerSelector';
 import ProviderSelector from '@/components/credentials/ProviderSelector';
 import CredentialForm from '@/components/credentials/CredentialForm';
@@ -24,6 +24,7 @@ export interface Credential {
 /**
  * Credentials Management Page
  * Manages cloud provider credentials (AK/SK) for different customers and providers
+ * Credentials are saved to local storage for use in ECS creation
  */
 export default function CredentialsPage() {
   const { sidebarCollapsed } = useUIStore();
@@ -32,8 +33,20 @@ export default function CredentialsPage() {
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
+  /**
+   * Load credentials from local storage on component mount
+   */
+  useEffect(() => {
+    const storedCredentials = getCredentialsFromLocalStorage();
+    setCredentials(storedCredentials);
+  }, []);
+
+  /**
+   * Handle credential submission
+   * Saves credential to local storage and updates state
+   */
   const handleCredentialSubmit = (accessKey: string, secretKey: string) => {
-    const newCredential: Credential = {
+    const newCredential: LocalCredential = {
       id: `cred-${Date.now()}`,
       customer: selectedCustomer,
       provider: selectedProvider,
@@ -42,12 +55,21 @@ export default function CredentialsPage() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    setCredentials((prev) => [...prev, newCredential]);
+    
+    saveCredentialToLocalStorage(newCredential);
+    const updatedCredentials = getCredentialsFromLocalStorage();
+    setCredentials(updatedCredentials);
     setRefreshKey((prev) => prev + 1);
   };
 
+  /**
+   * Handle credential deletion
+   * Removes credential from local storage and updates state
+   */
   const handleDeleteCredential = (id: string) => {
-    setCredentials((prev) => prev.filter((cred) => cred.id !== id));
+    deleteCredentialFromLocalStorage(id);
+    const updatedCredentials = getCredentialsFromLocalStorage();
+    setCredentials(updatedCredentials);
     setRefreshKey((prev) => prev + 1);
   };
 

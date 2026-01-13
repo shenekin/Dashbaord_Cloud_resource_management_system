@@ -68,3 +68,127 @@ export function generateSecurePassword(length: number = 16): string {
   return passwordArray.join('');
 }
 
+/**
+ * Local Storage Key for Credentials
+ */
+const CREDENTIALS_STORAGE_KEY = 'ecs-credentials';
+
+/**
+ * Credential interface for local storage
+ */
+export interface LocalCredential {
+  id: string;
+  customer: string;
+  provider: string;
+  accessKey: string;
+  secretKey: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Save credentials to local storage
+ * Stores customer, provider, access key, and secret key locally
+ * 
+ * @param credential - Credential object to save
+ */
+export function saveCredentialToLocalStorage(credential: LocalCredential): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    const existingCredentials = getCredentialsFromLocalStorage();
+    const updatedCredentials = existingCredentials.filter(
+      (cred) => cred.id !== credential.id
+    );
+    updatedCredentials.push(credential);
+    
+    localStorage.setItem(CREDENTIALS_STORAGE_KEY, JSON.stringify(updatedCredentials));
+  } catch (error) {
+    console.error('Failed to save credential to localStorage:', error);
+  }
+}
+
+/**
+ * Get all credentials from local storage
+ * 
+ * @returns Array of credentials
+ */
+export function getCredentialsFromLocalStorage(): LocalCredential[] {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+
+  try {
+    const stored = localStorage.getItem(CREDENTIALS_STORAGE_KEY);
+    if (!stored) {
+      return [];
+    }
+    return JSON.parse(stored) as LocalCredential[];
+  } catch (error) {
+    console.error('Failed to read credentials from localStorage:', error);
+    return [];
+  }
+}
+
+/**
+ * Get credentials by customer and provider
+ * 
+ * @param customer - Customer name
+ * @param provider - Provider name
+ * @returns Array of matching credentials
+ */
+export function getCredentialsByCustomerAndProvider(
+  customer: string,
+  provider: string
+): LocalCredential[] {
+  const allCredentials = getCredentialsFromLocalStorage();
+  return allCredentials.filter(
+    (cred) => cred.customer === customer && cred.provider === provider
+  );
+}
+
+/**
+ * Delete credential from local storage
+ * 
+ * @param credentialId - ID of credential to delete
+ */
+export function deleteCredentialFromLocalStorage(credentialId: string): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    const existingCredentials = getCredentialsFromLocalStorage();
+    const updatedCredentials = existingCredentials.filter(
+      (cred) => cred.id !== credentialId
+    );
+    localStorage.setItem(CREDENTIALS_STORAGE_KEY, JSON.stringify(updatedCredentials));
+  } catch (error) {
+    console.error('Failed to delete credential from localStorage:', error);
+  }
+}
+
+/**
+ * Get unique customers from stored credentials
+ * 
+ * @returns Array of unique customer names
+ */
+export function getUniqueCustomersFromStorage(): string[] {
+  const credentials = getCredentialsFromLocalStorage();
+  const customers = credentials.map((cred) => cred.customer);
+  return Array.from(new Set(customers));
+}
+
+/**
+ * Get unique providers from stored credentials
+ * 
+ * @returns Array of unique provider names
+ */
+export function getUniqueProvidersFromStorage(): string[] {
+  const credentials = getCredentialsFromLocalStorage();
+  const providers = credentials.map((cred) => cred.provider);
+  return Array.from(new Set(providers));
+}
+

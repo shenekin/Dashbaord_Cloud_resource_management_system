@@ -15,9 +15,12 @@ export default function SubnetSelector({
   onChange, 
   disabled = false 
 }: SubnetSelectorProps) {
-  // TODO: Fetch subnets from API based on VPC
+  // Default subnets - includes default subnet with IP range 192.168.1.0/24
+  const isDefaultVPC = vpc && vpc.startsWith('vpc-default-');
+  const defaultSubnet = isDefaultVPC ? `${vpc.replace('vpc-', 'subnet-')}-1` : null;
   const subnets = vpc
     ? [
+        ...(defaultSubnet ? [{ value: defaultSubnet, label: `Default Subnet (192.168.1.0/24)` }] : []),
         { value: `${vpc}-subnet-1`, label: 'Subnet 1' },
         { value: `${vpc}-subnet-2`, label: 'Subnet 2' },
       ]

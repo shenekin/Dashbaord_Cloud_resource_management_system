@@ -10,6 +10,12 @@ import DryRunSwitch from './DryRunSwitch';
 import { customersApi, Customer } from '@/services/customersApi';
 import { vendorsApi, Vendor } from '@/services/vendorsApi';
 import { credentialsApi, Credential } from '@/services/credentialsApi';
+import { 
+  getCredentialsFromLocalStorage, 
+  getUniqueCustomersFromStorage, 
+  getUniqueProvidersFromStorage,
+  LocalCredential 
+} from '@/lib/utils';
 
 /**
  * BasicInfoSection Component
@@ -69,15 +75,29 @@ export default function BasicInfoSection({
   const [loadingCustomers, setLoadingCustomers] = useState(false);
   const [loadingVendors, setLoadingVendors] = useState(false);
   
+  // State for local credentials
+  const [localCredentials, setLocalCredentials] = useState<LocalCredential[]>([]);
+  const [localCustomers, setLocalCustomers] = useState<string[]>([]);
+  const [localProviders, setLocalProviders] = useState<string[]>([]);
+  
   // State for credential auto-selection
-  const [selectedCredential, setSelectedCredential] = useState<Credential | null>(null);
+  const [selectedCredential, setSelectedCredential] = useState<LocalCredential | null>(null);
   const [loadingCredential, setLoadingCredential] = useState(false);
 
-  // Load customers and vendors on mount
+  /**
+   * Load customers and vendors from API and local storage
+   * Local storage credentials take precedence for customer/provider selection
+   */
   useEffect(() => {
     const loadData = async () => {
       setLoadingCustomers(true);
       setLoadingVendors(true);
+      
+      // Load from local storage first
+      const storedCredentials = getCredentialsFromLocalStorage();
+      setLocalCredentials(storedCredentials);
+      setLocalCustomers(getUniqueCustomersFromStorage());
+      setLocalProviders(getUniqueProvidersFromStorage());
       
       try {
         const [customersData, vendorsData] = await Promise.all([
@@ -124,15 +144,12 @@ export default function BasicInfoSection({
   };
 
   /**
-   * Automatically fetch and set credential when both customer and vendor are selected
-   * The credential is determined by customer_id and vendor_id combination
-   * This eliminates the need for manual credential selection - the system automatically
-   * determines the correct credential (AK/SK) based on the customer-provider combination
+   * Automatically select credential from local storage when customer and provider are selected
+   * Uses customer name and provider name to match credentials stored locally
    */
   useEffect(() => {
-    const autoSelectCredential = async () => {
+    const autoSelectCredential = () => {
       if (!formValue.customer_id || !formValue.vendor_id) {
-        // Reset credential if customer or vendor is not selected
         if (selectedCredential !== null || formValue.credential_id !== undefined) {
           setSelectedCredential(null);
           onChange({ credential_id: undefined });
@@ -140,64 +157,50 @@ export default function BasicInfoSection({
         return;
       }
 
-      // Skip if credential is already set and matches the current selection
-      if (selectedCredential && 
-          selectedCredential.customer_id === formValue.customer_id &&
-          selectedCredential.vendor_id === formValue.vendor_id &&
-          formValue.credential_id === selectedCredential.id) {
+      // Find customer and vendor names
+      const customer = customers.find(c => c.id === formValue.customer_id) || 
+                      localCustomers.find(c => c === formValue.customer_id?.toString());
+      const vendor = vendors.find(v => v.id === formValue.vendor_id) ||
+                     localProviders.find(p => p === formValue.vendor_id?.toString());
+
+      if (!customer || !vendor) {
         return;
       }
 
-      setLoadingCredential(true);
-      try {
-        // Fetch credentials for the selected customer
-        const response = await credentialsApi.getCredentials({
-          customer_id: formValue.customer_id,
-          page: 1,
-          page_size: 100
-        });
+      const customerName = typeof customer === 'string' ? customer : customer.name;
+      const vendorName = typeof vendor === 'string' ? vendor : vendor.display_name;
 
-        // Filter by vendor_id and only active credentials
-        const activeCredentials = response.items.filter(
-          cred => cred.status === 'active' && cred.vendor_id === formValue.vendor_id
-        );
+      // Find matching credential from local storage
+      const matchingCredentials = localCredentials.filter(
+        cred => cred.customer === customerName && cred.provider === vendorName
+      );
 
-        // Auto-select the first available credential for this customer-vendor combination
-        if (activeCredentials.length > 0) {
-          const credential = activeCredentials[0];
-          // Only update if credential has changed
-          if (!selectedCredential || selectedCredential.id !== credential.id) {
-            setSelectedCredential(credential);
-            onChange({ credential_id: credential.id });
-          }
-        } else {
-          // No credential available for this combination
-          if (selectedCredential !== null || formValue.credential_id !== undefined) {
-            setSelectedCredential(null);
-            onChange({ credential_id: undefined });
-          }
+      if (matchingCredentials.length > 0) {
+        const credential = matchingCredentials[0];
+        if (!selectedCredential || selectedCredential.id !== credential.id) {
+          setSelectedCredential(credential);
+          // Store credential ID as string for local credentials
+          onChange({ credential_id: credential.id as any });
         }
-      } catch (err) {
-        console.error('Failed to load credential:', err);
+      } else {
         if (selectedCredential !== null || formValue.credential_id !== undefined) {
           setSelectedCredential(null);
           onChange({ credential_id: undefined });
         }
-      } finally {
-        setLoadingCredential(false);
       }
     };
 
     autoSelectCredential();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formValue.customer_id, formValue.vendor_id]);
+  }, [formValue.customer_id, formValue.vendor_id, localCredentials, customers, vendors]);
 
   /**
    * Handle customer change - reset vendor and credential
+   * Supports both API customer IDs (number) and local customer names (string)
    */
-  const handleCustomerChange = (customerId: number | undefined) => {
+  const handleCustomerChange = (customerId: number | string | undefined) => {
     onChange({ 
-      customer_id: customerId,
+      customer_id: customerId as any,
       vendor_id: undefined, // Reset vendor when customer changes
       credential_id: undefined // Reset credential when customer changes
     });
@@ -205,10 +208,11 @@ export default function BasicInfoSection({
 
   /**
    * Handle vendor change - reset credential
+   * Supports both API vendor IDs (number) and local provider names (string)
    */
-  const handleVendorChange = (vendorId: number | undefined) => {
+  const handleVendorChange = (vendorId: number | string | undefined) => {
     onChange({ 
-      vendor_id: vendorId,
+      vendor_id: vendorId as any,
       credential_id: undefined // Reset credential when vendor changes
     });
   };
@@ -254,21 +258,34 @@ export default function BasicInfoSection({
                 id="customer-select"
                 value={formValue.customer_id || ''}
                 onChange={(e) => {
-                  const customerId = e.target.value ? parseInt(e.target.value, 10) : undefined;
-                  handleCustomerChange(customerId);
+                  const customerValue = e.target.value;
+                  const customerId = customerValue ? (isNaN(Number(customerValue)) ? customerValue : parseInt(customerValue, 10)) : undefined;
+                  handleCustomerChange(customerId as any);
                 }}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 transition-all duration-200 shadow-sm text-sm ${
                   errors['basic.customer_id'] ? 'border-red-300' : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
                 <option value="">Select a customer</option>
-                {Array.isArray(customers) && customers.length > 0 ? (
-                  customers.map((customer) => (
-                    <option key={customer.id} value={customer.id}>
-                      {customer.name}
-                    </option>
-                  ))
-                ) : (
+                {localCustomers.length > 0 && (
+                  <>
+                    {localCustomers.map((customerName) => (
+                      <option key={`local-${customerName}`} value={customerName}>
+                        {customerName} (Local)
+                      </option>
+                    ))}
+                  </>
+                )}
+                {Array.isArray(customers) && customers.length > 0 && (
+                  <>
+                    {customers.map((customer) => (
+                      <option key={customer.id} value={customer.id}>
+                        {customer.name}
+                      </option>
+                    ))}
+                  </>
+                )}
+                {localCustomers.length === 0 && (!Array.isArray(customers) || customers.length === 0) && (
                   <option value="" disabled>No customers available</option>
                 )}
               </select>
@@ -293,21 +310,34 @@ export default function BasicInfoSection({
                 id="vendor-select"
                 value={formValue.vendor_id || ''}
                 onChange={(e) => {
-                  const vendorId = e.target.value ? parseInt(e.target.value, 10) : undefined;
-                  handleVendorChange(vendorId);
+                  const vendorValue = e.target.value;
+                  const vendorId = vendorValue ? (isNaN(Number(vendorValue)) ? vendorValue : parseInt(vendorValue, 10)) : undefined;
+                  handleVendorChange(vendorId as any);
                 }}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 transition-all duration-200 shadow-sm text-sm ${
                   errors['basic.vendor_id'] ? 'border-red-300' : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
                 <option value="">Select a provider</option>
-                {Array.isArray(vendors) && vendors.length > 0 ? (
-                  vendors.map((vendor) => (
-                    <option key={vendor.id} value={vendor.id}>
-                      {vendor.display_name}
-                    </option>
-                  ))
-                ) : (
+                {localProviders.length > 0 && (
+                  <>
+                    {localProviders.map((providerName) => (
+                      <option key={`local-${providerName}`} value={providerName}>
+                        {providerName} (Local)
+                      </option>
+                    ))}
+                  </>
+                )}
+                {Array.isArray(vendors) && vendors.length > 0 && (
+                  <>
+                    {vendors.map((vendor) => (
+                      <option key={vendor.id} value={vendor.id}>
+                        {vendor.display_name}
+                      </option>
+                    ))}
+                  </>
+                )}
+                {localProviders.length === 0 && (!Array.isArray(vendors) || vendors.length === 0) && (
                   <option value="" disabled>No providers available</option>
                 )}
               </select>
@@ -329,7 +359,7 @@ export default function BasicInfoSection({
             ) : selectedCredential ? (
               <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-xs text-blue-800 font-medium">
-                  Credential: {selectedCredential.customer_name} - {selectedCredential.vendor_display_name} (AK: {maskAccessKey(selectedCredential.access_key)})
+                  Credential: {selectedCredential.customer} - {selectedCredential.provider} (AK: {maskAccessKey(selectedCredential.accessKey)})
                 </p>
               </div>
             ) : (

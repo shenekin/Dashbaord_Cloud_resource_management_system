@@ -17,8 +17,10 @@ export default function VPCSelector({
   availabilityZone,
   disabled = false 
 }: VPCSelectorProps) {
-  // TODO: Fetch VPCs from API based on region and availabilityZone
+  // Default VPCs - includes default VPC for the region
+  const defaultVPC = region ? `vpc-default-${region}` : '';
   const vpcs = [
+    ...(defaultVPC ? [{ value: defaultVPC, label: `Default VPC (${region})` }] : []),
     { value: 'vpc-001', label: 'VPC-001' },
     { value: 'vpc-002', label: 'VPC-002' },
   ];

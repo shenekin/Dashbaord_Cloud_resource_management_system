@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CreateECSRequest",
+  "type": "object",
+  "required": [
+    "region",
+    "availability_zone",
+    "server_name",
+    "instance_count",
+    "instance_type",
+    "cpu",
+    "memory",
+    "os_image",
+    "login_method"
+  ],
+  "properties": {
+    "region": {
+      "type": "string",
+      "minLength": 1
+    },
+    "availability_zone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "server_name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9-_]*$"
+    },
+    "instance_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "instance_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cpu": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 128
+    },
+    "memory": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 512,
+      "description": "Memory in GB"
+    },
+    "system_disk": {
+      "type": "object",
+      "required": ["type", "size"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["SSD", "ESSD", "HDD"]
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 40,
+          "maximum": 2048
+        }
+      }
+    },
+    "os_image": {
+      "type": "string",
+      "minLength": 1
+    },
+    "login_method": {
+      "type": "string",
+      "enum": ["password", "ssh_key"]
+    },
+    "password": {
+      "type": "string",
+      "minLength": 12,
+      "maxLength": 64
+    },
+    "ssh_key_id": {
+      "type": "string"
+    },
+    "network": {
+      "type": "object",
+      "required": ["vpc_id", "subnet_id"],
+      "properties": {
+        "vpc_id": {
+          "type": "string"
+        },
+        "subnet_id": {
+          "type": "string"
+        },
+        "assign_public_ip": {
+          "type": "boolean"
+        }
+      }
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 64
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "login_method": { "const": "password" } }
+      },
+      "then": {
+        "required": ["password"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "login_method": { "const": "ssh_key" } }
+      },
+      "then": {
+        "required": ["ssh_key_id"]
+      }
+    }
+  ]
+}
+

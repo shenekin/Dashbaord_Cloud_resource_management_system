@@ -1,0 +1,16 @@
+{
+  "REQUIRED_FIELD": "This field is required.",
+  "INVALID_FORMAT": "Invalid format.",
+  "STRING_TOO_SHORT": "Must be at least {min} characters.",
+  "STRING_TOO_LONG": "Must be no more than {max} characters.",
+  "INVALID_ENUM": "Invalid value selected.",
+  "NUMBER_TOO_SMALL": "Must be greater than or equal to {min}.",
+  "NUMBER_TOO_LARGE": "Must be less than or equal to {max}.",
+  "PASSWORD_WEAK": "Password does not meet security requirements.",
+  "INSTANCE_TYPE_MISMATCH": "Selected CPU and memory are not compatible with this instance type.",
+  "QUOTA_EXCEEDED": "Requested resources exceed your quota.",
+  "ZONE_NOT_SUPPORTED": "Selected availability zone is not supported.",
+  "SSH_KEY_REQUIRED": "SSH key is required when login method is SSH.",
+  "PASSWORD_REQUIRED": "Password is required when login method is password."
+}
+

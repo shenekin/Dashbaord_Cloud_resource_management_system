@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { NetworkInfo } from '@/types/server';
 import VPCSelector from './VPCSelector';
 import SubnetSelector from './SubnetSelector';
@@ -32,6 +33,23 @@ export default function NetworkSection({
   };
 
   const isDisabled = disabled || !region || !availabilityZone;
+
+  /**
+   * Set default VPC and subnet when region and availability zone are available
+   * Default VPC: vpc-default-{region}
+   * Default Subnet: subnet-default-{region}-{az} with IP range 192.168.1.0/24
+   */
+  useEffect(() => {
+    if (region && availabilityZone && !formValue.vpc && !formValue.subnet) {
+      const defaultVPC = `vpc-default-${region}`;
+      const defaultSubnet = `subnet-default-${region}-${availabilityZone}`;
+      onChange({ 
+        vpc: defaultVPC,
+        subnet: defaultSubnet
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region, availabilityZone]);
 
   const handleVPCChange = (vpc: string) => {
     onChange({ vpc, subnet: '' }); // Reset subnet when VPC changes
