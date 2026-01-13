@@ -1,7 +1,0 @@
-当你想生成前端页面时，可以用下面的指令模板：
-你是资深前端开发工程师。帮我生成一个网页：
-- 页面布局： Header + Sidebar + MainContent + foot
-- 内容： 需要按照《front-end-full-stak.txt》 和 《cloud_resource_management_page_layerout.txt》 帮我设计前端
-- 样式：使用TailwindCSS，统一蓝色主题，字体为无衬线，按钮有圆角
-- 输出：可直接运行的完整HTML文件
-

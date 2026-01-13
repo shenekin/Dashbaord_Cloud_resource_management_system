@@ -1,9 +1,10 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useFormEngine } from '@/hooks/useFormEngine';
 import { loadServerFormConfig } from '@/utils/schemaLoader';
 import { ServerFormData } from '@/types/server';
+import { generateServerName, generateSecurePassword } from '@/lib/utils';
 
 const initialFormData: ServerFormData = {
   basic: {
@@ -61,6 +62,34 @@ export function useECSServerForm() {
     getContextValue,
     getMaxValue,
   } = useFormEngine<ServerFormData>(initialFormData, config);
+
+  // Track if initial values have been generated to prevent regeneration on re-renders
+  const hasGeneratedInitialValues = useRef(false);
+
+  /**
+   * Auto-generate server name and password on component mount
+   * These values are generated instantly without API calls
+   * Users can modify or regenerate them later
+   */
+  useEffect(() => {
+    if (hasGeneratedInitialValues.current) {
+      return;
+    }
+
+    // Only generate if values are empty (not already set)
+    if (!formData.basic.name) {
+      const generatedServerName = generateServerName();
+      updateField('basic', 'name', generatedServerName);
+    }
+
+    if (!formData.compute.adminPassword) {
+      const generatedPassword = generateSecurePassword(16);
+      updateField('compute', 'adminPassword', generatedPassword);
+    }
+
+    hasGeneratedInitialValues.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Helper to update section data (maintains backward compatibility)
   const updateFormData = <K extends keyof ServerFormData>(

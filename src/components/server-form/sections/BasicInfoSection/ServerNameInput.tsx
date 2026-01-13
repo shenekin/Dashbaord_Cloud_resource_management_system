@@ -1,17 +1,50 @@
 'use client';
 
+import { generateServerName } from '@/lib/utils';
+
 interface ServerNameInputProps {
   value: string;
   error?: string;
   onChange: (value: string) => void;
 }
 
+/**
+ * Server Name Input Component
+ * 
+ * Displays server name input field with auto-generation capability.
+ * Users can modify the generated name or regenerate a new one.
+ * 
+ * Features:
+ * - Auto-generated server name on page load
+ * - Regenerate button for creating new names
+ * - User can manually edit the generated name
+ * - Backend-independent generation (no API calls)
+ */
 export default function ServerNameInput({ value, error, onChange }: ServerNameInputProps) {
+  /**
+   * Handle regenerate button click
+   * Generates a new server name and updates the form
+   */
+  const handleRegenerate = () => {
+    const newServerName = generateServerName();
+    onChange(newServerName);
+  };
+
   return (
     <div>
-      <label htmlFor="name-input" className="block text-sm font-semibold text-gray-700 mb-2">
-        Server Name <span className="text-red-500">*</span>
-      </label>
+      <div className="flex items-center justify-between mb-2">
+        <label htmlFor="name-input" className="block text-sm font-semibold text-gray-700">
+          Server Name <span className="text-red-500">*</span>
+        </label>
+        <button
+          type="button"
+          onClick={handleRegenerate}
+          className="text-xs text-blue-600 hover:text-blue-700 font-medium px-2 py-1 rounded-md hover:bg-blue-50 transition-colors"
+          aria-label="Regenerate server name"
+        >
+          Regenerate
+        </button>
+      </div>
       <input
         id="name-input"
         type="text"

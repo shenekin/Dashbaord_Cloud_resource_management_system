@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { generateSecurePassword } from '@/lib/utils';
 
 interface AdminPasswordInputProps {
   value: string;
@@ -9,6 +10,20 @@ interface AdminPasswordInputProps {
   disabled?: boolean;
 }
 
+/**
+ * Administrator Password Input Component
+ * 
+ * Displays password input field with auto-generation capability.
+ * Users can modify the generated password or regenerate a new one.
+ * 
+ * Features:
+ * - Auto-generated secure password on page load
+ * - Regenerate button for creating new passwords
+ * - Show/Hide password toggle
+ * - User can manually edit the generated password
+ * - Backend-independent generation (no API calls)
+ * - Password exists only in memory (never stored)
+ */
 export default function AdminPasswordInput({ 
   value, 
   error, 
@@ -17,11 +32,32 @@ export default function AdminPasswordInput({
 }: AdminPasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
 
+  /**
+   * Handle regenerate button click
+   * Generates a new secure password and updates the form
+   * Password is generated instantly without API calls
+   */
+  const handleRegenerate = () => {
+    const newPassword = generateSecurePassword(16);
+    onChange(newPassword);
+  };
+
   return (
     <div>
-      <label htmlFor="admin-password" className="block text-sm font-semibold text-gray-700 mb-2">
-        Administrator Password <span className="text-red-500">*</span>
-      </label>
+      <div className="flex items-center justify-between mb-2">
+        <label htmlFor="admin-password" className="block text-sm font-semibold text-gray-700">
+          Administrator Password <span className="text-red-500">*</span>
+        </label>
+        <button
+          type="button"
+          onClick={handleRegenerate}
+          disabled={disabled}
+          className="text-xs text-blue-600 hover:text-blue-700 font-medium px-2 py-1 rounded-md hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Regenerate administrator password"
+        >
+          Regenerate
+        </button>
+      </div>
       <div className="relative">
         <input
           id="admin-password"
@@ -43,6 +79,7 @@ export default function AdminPasswordInput({
           onClick={() => setShowPassword(!showPassword)}
           disabled={disabled}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 disabled:opacity-50 font-medium text-sm px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors"
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
         >
           {showPassword ? 'Hide' : 'Show'}
         </button>
